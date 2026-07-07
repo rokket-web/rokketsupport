@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
-import bcrypt from "bcryptjs";
-import { findUserByUsername, type UserRole } from "@/lib/users";
+import { verifyCredentials } from "@/lib/userStore";
+import type { UserRole } from "@/lib/users";
 
 const SESSION_COOKIE = "rws_session";
 
@@ -14,13 +14,8 @@ export async function verifyTeamMemberCredentials(
   username: string,
   password: string
 ): Promise<AppAuthResult> {
-  const user = findUserByUsername(username);
+  const user = await verifyCredentials(username, password);
   if (!user) {
-    return { success: false, error: "Invalid username or password." };
-  }
-
-  const passwordMatches = await bcrypt.compare(password, user.passwordHash);
-  if (!passwordMatches) {
     return { success: false, error: "Invalid username or password." };
   }
 

@@ -11,6 +11,8 @@ export interface ClientFormValues {
   customPlatform: string;
   adminUsername: string;
   password: string;
+  sftpUsername: string;
+  sftpPassword: string;
 }
 
 const EMPTY_VALUES: ClientFormValues = {
@@ -21,6 +23,8 @@ const EMPTY_VALUES: ClientFormValues = {
   customPlatform: "",
   adminUsername: "",
   password: "",
+  sftpUsername: "",
+  sftpPassword: "",
 };
 
 const inputClasses =
@@ -145,6 +149,27 @@ export default function ClientForm({
           placeholder={isEditing ? "Leave blank to keep current password" : undefined}
           value={values.password}
           onChange={(e) => update("password", e.target.value)}
+          className={inputClasses}
+        />
+      </div>
+
+      <div>
+        <label className={labelClasses}>SFTP Username</label>
+        <input
+          value={values.sftpUsername}
+          onChange={(e) => update("sftpUsername", e.target.value)}
+          className={inputClasses}
+        />
+      </div>
+
+      <div>
+        <label className={labelClasses}>SFTP Password</label>
+        <input
+          type="password"
+          autoComplete="new-password"
+          placeholder={isEditing ? "Leave blank to keep current password" : undefined}
+          value={values.sftpPassword}
+          onChange={(e) => update("sftpPassword", e.target.value)}
           className={inputClasses}
         />
       </div>

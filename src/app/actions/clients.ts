@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import {
   addClient,
   getClientCredentials,
+  getClientSftpCredentials,
   updateClient,
   type AddClientInput,
   type UpdateClientInput,
@@ -28,4 +29,10 @@ export async function getClientCredentialsAction(
   id: string
 ): Promise<{ username: string; password: string } | null> {
   return getClientCredentials(id);
+}
+
+export async function getClientSftpCredentialsAction(
+  id: string
+): Promise<{ username: string; password: string } | null> {
+  return getClientSftpCredentials(id);
 }

@@ -16,8 +16,17 @@ const ENCRYPTION_KEY = crypto
   .update("rws-client-manager-server-key-v1")
   .digest();
 
-interface StoredClient extends ClientRecord {
+interface StoredClient {
+  id: string;
+  name: string;
+  websiteUrl: string;
+  loginUrl: string;
+  platform: ClientPlatform;
+  customPlatform?: string;
+  adminUsername: string;
   encryptedPassword: string;
+  sftpUsername?: string;
+  encryptedSftpPassword?: string;
 }
 
 export interface AddClientInput {
@@ -28,6 +37,8 @@ export interface AddClientInput {
   customPlatform?: string;
   adminUsername: string;
   password: string;
+  sftpUsername?: string;
+  sftpPassword?: string;
 }
 
 export interface UpdateClientInput {
@@ -40,6 +51,9 @@ export interface UpdateClientInput {
   adminUsername: string;
   // Omit or leave blank to keep the existing password.
   password?: string;
+  sftpUsername?: string;
+  // Omit or leave blank to keep the existing SFTP password.
+  sftpPassword?: string;
 }
 
 function encrypt(plaintext: string): string {
@@ -82,8 +96,18 @@ async function writeAll(clients: StoredClient[]): Promise<void> {
 }
 
 function toPublicRecord(stored: StoredClient): ClientRecord {
-  const { id, name, websiteUrl, loginUrl, platform, customPlatform, adminUsername } = stored;
-  return { id, name, websiteUrl, loginUrl, platform, customPlatform, adminUsername };
+  const { id, name, websiteUrl, loginUrl, platform, customPlatform, adminUsername, sftpUsername, encryptedSftpPassword } = stored;
+  return {
+    id,
+    name,
+    websiteUrl,
+    loginUrl,
+    platform,
+    customPlatform,
+    adminUsername,
+    sftpUsername,
+    hasSftpPassword: Boolean(encryptedSftpPassword),
+  };
 }
 
 export async function listClients(): Promise<ClientRecord[]> {
@@ -102,6 +126,8 @@ export async function addClient(input: AddClientInput): Promise<ClientRecord> {
     customPlatform: input.platform === "Other" ? input.customPlatform : undefined,
     adminUsername: input.adminUsername,
     encryptedPassword: encrypt(input.password),
+    sftpUsername: input.sftpUsername || undefined,
+    encryptedSftpPassword: input.sftpPassword ? encrypt(input.sftpPassword) : undefined,
   };
   clients.push(stored);
   await writeAll(clients);
@@ -127,6 +153,10 @@ export async function updateClient(
     encryptedPassword: input.password
       ? encrypt(input.password)
       : existing.encryptedPassword,
+    sftpUsername: input.sftpUsername || undefined,
+    encryptedSftpPassword: input.sftpPassword
+      ? encrypt(input.sftpPassword)
+      : existing.encryptedSftpPassword,
   };
   clients[index] = updated;
   await writeAll(clients);
@@ -140,4 +170,16 @@ export async function getClientCredentials(
   const found = clients.find((c) => c.id === id);
   if (!found) return null;
   return { username: found.adminUsername, password: decrypt(found.encryptedPassword) };
+}
+
+export async function getClientSftpCredentials(
+  id: string
+): Promise<{ username: string; password: string } | null> {
+  const clients = await readAll();
+  const found = clients.find((c) => c.id === id);
+  if (!found || !found.encryptedSftpPassword) return null;
+  return {
+    username: found.sftpUsername ?? "",
+    password: decrypt(found.encryptedSftpPassword),
+  };
 }

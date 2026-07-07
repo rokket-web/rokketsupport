@@ -1,9 +1,13 @@
 import Link from "next/link";
 import AdminTabs from "@/components/admin/AdminTabs";
 import { listClients } from "@/lib/clientStore";
+import { listTeamMembers } from "@/lib/userStore";
 
 export default async function AdminDashboardPage() {
-  const clients = await listClients();
+  const [clients, teamMembers] = await Promise.all([
+    listClients(),
+    listTeamMembers(),
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -23,7 +27,7 @@ export default async function AdminDashboardPage() {
         </p>
 
         <div className="mt-8">
-          <AdminTabs initialClients={clients} />
+          <AdminTabs initialClients={clients} initialTeamMembers={teamMembers} />
         </div>
       </main>
     </div>

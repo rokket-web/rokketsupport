@@ -4,6 +4,7 @@ import { useState } from "react";
 import ClientManager from "./ClientManager";
 import TeamManager from "./TeamManager";
 import type { ClientRecord } from "@/lib/clients";
+import type { TeamMemberRecord } from "@/lib/userStore";
 
 const TABS = [
   { id: "clients", label: "Client Manager" },
@@ -14,9 +15,13 @@ type TabId = (typeof TABS)[number]["id"];
 
 interface AdminTabsProps {
   initialClients: ClientRecord[];
+  initialTeamMembers: TeamMemberRecord[];
 }
 
-export default function AdminTabs({ initialClients }: AdminTabsProps) {
+export default function AdminTabs({
+  initialClients,
+  initialTeamMembers,
+}: AdminTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>("clients");
 
   return (
@@ -46,7 +51,7 @@ export default function AdminTabs({ initialClients }: AdminTabsProps) {
         {activeTab === "clients" ? (
           <ClientManager initialClients={initialClients} />
         ) : (
-          <TeamManager />
+          <TeamManager initialTeamMembers={initialTeamMembers} />
         )}
       </div>
     </div>
