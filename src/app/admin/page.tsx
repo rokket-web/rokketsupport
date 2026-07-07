@@ -1,7 +1,10 @@
 import Link from "next/link";
 import AdminTabs from "@/components/admin/AdminTabs";
+import { listClients } from "@/lib/clientStore";
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  const clients = await listClients();
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 sm:px-10">
@@ -20,7 +23,7 @@ export default function AdminDashboardPage() {
         </p>
 
         <div className="mt-8">
-          <AdminTabs />
+          <AdminTabs initialClients={clients} />
         </div>
       </main>
     </div>

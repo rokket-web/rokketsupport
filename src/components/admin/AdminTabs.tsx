@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ClientManager from "./ClientManager";
 import TeamManager from "./TeamManager";
+import type { ClientRecord } from "@/lib/clients";
 
 const TABS = [
   { id: "clients", label: "Client Manager" },
@@ -11,7 +12,11 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]["id"];
 
-export default function AdminTabs() {
+interface AdminTabsProps {
+  initialClients: ClientRecord[];
+}
+
+export default function AdminTabs({ initialClients }: AdminTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>("clients");
 
   return (
@@ -38,7 +43,11 @@ export default function AdminTabs() {
       </div>
 
       <div className="py-6">
-        {activeTab === "clients" ? <ClientManager /> : <TeamManager />}
+        {activeTab === "clients" ? (
+          <ClientManager initialClients={initialClients} />
+        ) : (
+          <TeamManager />
+        )}
       </div>
     </div>
   );

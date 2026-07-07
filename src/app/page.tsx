@@ -1,13 +1,17 @@
 import LoginMenu from "@/components/LoginMenu";
+import LogoutButton from "@/components/LogoutButton";
+import { getSession } from "@/lib/auth";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getSession();
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="flex items-center justify-between border-b border-gray-200 px-6 py-4 sm:px-10">
+    <div className="flex min-h-screen flex-col bg-gray-50">
+      <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 sm:px-10">
         <span className="text-lg font-semibold text-gray-900">
           Rokket Web Development
         </span>
-        <LoginMenu />
+        {session ? <LogoutButton /> : <LoginMenu />}
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
