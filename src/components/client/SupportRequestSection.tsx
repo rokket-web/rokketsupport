@@ -77,11 +77,14 @@ export default function SupportRequestSection({
     }
   }
 
+  const activeRequests = requests.filter((request) => request.status !== "complete");
+  const completedRequests = requests.filter((request) => request.status === "complete");
+
   return (
     <div>
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">
-          Current Support Items
+          Active Support Items
         </h2>
         <button
           type="button"
@@ -92,13 +95,37 @@ export default function SupportRequestSection({
         </button>
       </div>
 
-      {requests.length === 0 ? (
+      {activeRequests.length === 0 ? (
         <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-400">
-          No open support requests.
+          No active support requests.
         </div>
       ) : (
         <ul className="mt-6 divide-y divide-gray-200 overflow-hidden rounded-xl border border-gray-200 bg-white">
-          {requests.map((request) => (
+          {activeRequests.map((request) => (
+            <li key={request.id} className="px-4 py-3">
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium text-gray-900">{request.issue}</p>
+                <SupportStatusBadge status={request.status} />
+              </div>
+              <p className="mt-1 text-xs text-gray-500">
+                Submitted {new Date(request.createdAt).toLocaleDateString()}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <h2 className="mt-10 text-lg font-semibold text-gray-900">
+        Completed Support Items
+      </h2>
+
+      {completedRequests.length === 0 ? (
+        <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-400">
+          No completed support requests yet.
+        </div>
+      ) : (
+        <ul className="mt-6 divide-y divide-gray-200 overflow-hidden rounded-xl border border-gray-200 bg-white">
+          {completedRequests.map((request) => (
             <li key={request.id} className="px-4 py-3">
               <div className="flex items-center gap-2">
                 <p className="text-sm font-medium text-gray-900">{request.issue}</p>

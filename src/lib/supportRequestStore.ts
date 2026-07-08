@@ -5,6 +5,7 @@ import type {
   SupportRequestSummary,
   SupportRequestDetails,
   SupportRequestGroup,
+  SupportRequestGroups,
   SupportRequestStatus,
 } from "@/lib/supportRequests";
 
@@ -39,6 +40,16 @@ async function getCollection() {
   return db.collection<SupportRequestDoc>("support_requests");
 }
 
+// Requests created before the Active/In Progress/Complete statuses existed
+// were stored with "open"/"closed". Normalize those (and anything else
+// unrecognized) so old records don't render a blank, uncolored badge.
+function normalizeStatus(status: SupportRequestDoc["status"]): SupportRequestStatus {
+  if (status === "active" || status === "in_progress" || status === "complete") {
+    return status;
+  }
+  return status === "closed" ? "complete" : "active";
+}
+
 function toSummary(doc: SupportRequestDoc): SupportRequestSummary {
   return {
     id: doc._id,
@@ -46,7 +57,7 @@ function toSummary(doc: SupportRequestDoc): SupportRequestSummary {
     clientName: doc.clientName,
     websiteUrl: doc.websiteUrl,
     issue: doc.issue,
-    status: doc.status,
+    status: normalizeStatus(doc.status),
     createdAt: doc.createdAt.toISOString(),
   };
 }
@@ -86,22 +97,22 @@ export async function listSupportRequestsForClient(
 ): Promise<SupportRequestSummary[]> {
   const collection = await getCollection();
   const docs = await collection
-    .find({ clientId, status: { $ne: "complete" } })
+    .find({ clientId })
     .sort({ createdAt: -1 })
     .toArray();
   return docs.map(toSummary);
 }
 
-export async function listOpenSupportRequestGroups(): Promise<SupportRequestGroup[]> {
+export async function listSupportRequestGroups(): Promise<SupportRequestGroups> {
   const collection = await getCollection();
-  const docs = await collection
-    .find({ status: { $ne: "complete" } })
-    .sort({ createdAt: -1 })
-    .toArray();
+  const docs = await collection.find().sort({ createdAt: -1 }).toArray();
 
-  const groups = new Map<string, SupportRequestGroup>();
+  const activeGroups = new Map<string, SupportRequestGroup>();
+  const completedGroups = new Map<string, SupportRequestGroup>();
+
   for (const doc of docs) {
     const summary = toSummary(doc);
+    const groups = summary.status === "complete" ? completedGroups : activeGroups;
     const existing = groups.get(doc.clientId);
     if (existing) {
       existing.items.push(summary);
@@ -113,7 +124,11 @@ export async function listOpenSupportRequestGroups(): Promise<SupportRequestGrou
       });
     }
   }
-  return Array.from(groups.values());
+
+  return {
+    active: Array.from(activeGroups.values()),
+    completed: Array.from(completedGroups.values()),
+  };
 }
 
 export async function getSupportRequestDetails(

@@ -49,3 +49,8 @@ export interface SupportRequestGroup {
   clientName: string;
   items: SupportRequestSummary[];
 }
+
+export interface SupportRequestGroups {
+  active: SupportRequestGroup[];
+  completed: SupportRequestGroup[];
+}

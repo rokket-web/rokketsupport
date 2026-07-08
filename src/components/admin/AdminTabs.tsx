@@ -6,7 +6,7 @@ import TeamManager from "./TeamManager";
 import SupportRequestManager from "./SupportRequestManager";
 import type { ClientRecord } from "@/lib/clients";
 import type { TeamMemberRecord } from "@/lib/userStore";
-import type { SupportRequestGroup } from "@/lib/supportRequests";
+import type { SupportRequestGroups } from "@/lib/supportRequests";
 
 const TABS = [
   { id: "clients", label: "Client Manager" },
@@ -19,7 +19,7 @@ type TabId = (typeof TABS)[number]["id"];
 interface AdminTabsProps {
   initialClients: ClientRecord[];
   initialTeamMembers: TeamMemberRecord[];
-  initialSupportRequestGroups: SupportRequestGroup[];
+  initialSupportRequestGroups: SupportRequestGroups;
 }
 
 export default function AdminTabs({
