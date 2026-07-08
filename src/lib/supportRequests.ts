@@ -14,6 +14,14 @@ export const SUPPORT_REQUEST_STATUS_COLORS: Record<SupportRequestStatus, string>
   complete: "bg-green-100 text-green-700",
 };
 
+// Solid background + white text, for the button-style status indicator in
+// the Support Requests list rows.
+export const SUPPORT_REQUEST_STATUS_SOLID_COLORS: Record<SupportRequestStatus, string> = {
+  active: "bg-red-600 text-white",
+  in_progress: "bg-yellow-500 text-white",
+  complete: "bg-green-600 text-white",
+};
+
 // Public shapes sent to the browser — summaries never include image bytes;
 // full images are only fetched on demand when an admin opens an item.
 export interface SupportRequestSummary {

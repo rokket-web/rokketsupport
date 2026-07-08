@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { getSupportRequestDetailsAction } from "@/app/actions/support";
 import SupportRequestModal from "./SupportRequestModal";
-import SupportStatusBadge from "@/components/SupportStatusBadge";
-import type {
-  SupportRequestDetails,
-  SupportRequestGroup,
-  SupportRequestStatus,
+import {
+  SUPPORT_REQUEST_STATUS_LABELS,
+  SUPPORT_REQUEST_STATUS_SOLID_COLORS,
+  type SupportRequestDetails,
+  type SupportRequestGroup,
+  type SupportRequestStatus,
 } from "@/lib/supportRequests";
 
 interface SupportRequestManagerProps {
@@ -101,14 +102,18 @@ export default function SupportRequestManager({
                           disabled={loadingId === item.id}
                           className="flex w-full items-center justify-between px-8 py-2.5 text-left text-sm hover:bg-gray-100 disabled:opacity-50"
                         >
-                          <span className="flex items-center gap-2">
-                            <span className="text-gray-800">{item.issue}</span>
-                            <SupportStatusBadge status={item.status} />
-                          </span>
-                          <span className="text-xs text-gray-400">
-                            {loadingId === item.id
-                              ? "Loading..."
-                              : new Date(item.createdAt).toLocaleDateString()}
+                          <span className="text-gray-800">{item.issue}</span>
+                          <span className="flex items-center gap-3">
+                            <span className="text-xs text-gray-400">
+                              {loadingId === item.id
+                                ? "Loading..."
+                                : new Date(item.createdAt).toLocaleDateString()}
+                            </span>
+                            <span
+                              className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium ${SUPPORT_REQUEST_STATUS_SOLID_COLORS[item.status]}`}
+                            >
+                              {SUPPORT_REQUEST_STATUS_LABELS[item.status]}
+                            </span>
                           </span>
                         </button>
                       </li>
