@@ -1,7 +1,13 @@
 import Link from "next/link";
 import AdminTabs from "@/components/admin/AdminTabs";
+import LogoutButton from "@/components/LogoutButton";
 import { listClients } from "@/lib/clientStore";
 import { listTeamMembers } from "@/lib/userStore";
+
+// Data comes from a live database, not a static file — never prerender this
+// page at build time (which would either fail without a reachable DB or bake
+// in a stale snapshot).
+export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
   const [clients, teamMembers] = await Promise.all([
@@ -15,9 +21,12 @@ export default async function AdminDashboardPage() {
         <span className="text-lg font-semibold text-gray-900">
           Rokket Web Development
         </span>
-        <Link href="/" className="text-sm text-gray-500 hover:text-gray-800">
-          Home
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/" className="text-sm text-gray-500 hover:text-gray-800">
+            Home
+          </Link>
+          <LogoutButton />
+        </div>
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-10">

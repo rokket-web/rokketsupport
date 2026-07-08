@@ -1,6 +1,7 @@
 import Link from "next/link";
 import LoginMenu from "@/components/LoginMenu";
 import LogoutButton from "@/components/LogoutButton";
+import DashboardLink from "@/components/DashboardLink";
 import { getSession } from "@/lib/auth";
 
 export default async function Home() {
@@ -15,7 +16,14 @@ export default async function Home() {
         <span className="text-lg font-semibold text-gray-900">
           Rokket Web Development
         </span>
-        {session ? <LogoutButton /> : <LoginMenu />}
+        {session ? (
+          <div className="flex items-center gap-3">
+            <DashboardLink role={session.role} />
+            <LogoutButton />
+          </div>
+        ) : (
+          <LoginMenu />
+        )}
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">

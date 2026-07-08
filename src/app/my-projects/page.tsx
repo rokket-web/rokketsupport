@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LogoutButton from "@/components/LogoutButton";
 import { getSession } from "@/lib/auth";
 
 export default async function MyProjectsPage() {
@@ -10,9 +11,12 @@ export default async function MyProjectsPage() {
         <span className="text-lg font-semibold text-gray-900">
           Rokket Web Development
         </span>
-        <Link href="/" className="text-sm text-gray-500 hover:text-gray-800">
-          Home
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/" className="text-sm text-gray-500 hover:text-gray-800">
+            Home
+          </Link>
+          <LogoutButton />
+        </div>
       </header>
 
       <main className="mx-auto max-w-4xl px-6 py-10">
