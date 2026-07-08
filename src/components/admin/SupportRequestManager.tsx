@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getSupportRequestDetailsAction } from "@/app/actions/support";
 import SupportRequestModal from "./SupportRequestModal";
 import {
@@ -15,6 +15,7 @@ import {
 
 interface SupportRequestManagerProps {
   initialGroups: SupportRequestGroups;
+  onActiveCountChange?: (count: number) => void;
 }
 
 interface RemoveResult {
@@ -141,6 +142,7 @@ function SupportRequestGroupSection({
 
 export default function SupportRequestManager({
   initialGroups,
+  onActiveCountChange,
 }: SupportRequestManagerProps) {
   const [activeGroups, setActiveGroups] = useState<SupportRequestGroup[]>(
     initialGroups.active
@@ -151,6 +153,13 @@ export default function SupportRequestManager({
   const [selectedRequest, setSelectedRequest] =
     useState<SupportRequestDetails | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const count = activeGroups.reduce((sum, group) => sum + group.items.length, 0);
+    onActiveCountChange?.(count);
+    // onActiveCountChange intentionally omitted — only re-run when the counts themselves change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeGroups]);
 
   async function openItem(id: string) {
     setLoadingId(id);

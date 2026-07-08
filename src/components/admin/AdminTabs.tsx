@@ -28,6 +28,12 @@ export default function AdminTabs({
   initialSupportRequestGroups,
 }: AdminTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>("clients");
+  const [activeRequestCount, setActiveRequestCount] = useState(() =>
+    initialSupportRequestGroups.active.reduce(
+      (sum, group) => sum + group.items.length,
+      0
+    )
+  );
 
   return (
     <div>
@@ -40,13 +46,18 @@ export default function AdminTabs({
               role="tab"
               aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`border-b-2 px-1 py-3 text-sm font-medium transition ${
+              className={`flex items-center gap-2 border-b-2 px-1 py-3 text-sm font-medium transition ${
                 activeTab === tab.id
                   ? "border-gray-900 text-gray-900"
                   : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
               }`}
             >
               {tab.label}
+              {tab.id === "support" && activeRequestCount > 0 && (
+                <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-600 px-1 text-xs font-semibold text-white">
+                  {activeRequestCount}
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -58,7 +69,10 @@ export default function AdminTabs({
           <TeamManager initialTeamMembers={initialTeamMembers} />
         )}
         {activeTab === "support" && (
-          <SupportRequestManager initialGroups={initialSupportRequestGroups} />
+          <SupportRequestManager
+            initialGroups={initialSupportRequestGroups}
+            onActiveCountChange={setActiveRequestCount}
+          />
         )}
       </div>
     </div>
