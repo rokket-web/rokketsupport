@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { UserRole } from "@/lib/users";
+import { USER_ROLES, USER_ROLE_LABELS, type UserRole } from "@/lib/users";
 
 export interface TeamMemberFormValues {
   name: string;
@@ -98,8 +98,11 @@ export default function TeamMemberForm({
           onChange={(e) => update("role", e.target.value as UserRole)}
           className={`${inputClasses} bg-white`}
         >
-          <option value="admin">Admin</option>
-          <option value="team_member">Team Member</option>
+          {USER_ROLES.map((role) => (
+            <option key={role} value={role}>
+              {USER_ROLE_LABELS[role]}
+            </option>
+          ))}
         </select>
       </div>
 

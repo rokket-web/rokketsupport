@@ -9,6 +9,7 @@ import {
   updateTeamMemberAction,
 } from "@/app/actions/team";
 import type { TeamMemberRecord } from "@/lib/userStore";
+import { USER_ROLE_LABELS } from "@/lib/users";
 
 interface TeamManagerProps {
   initialTeamMembers: TeamMemberRecord[];
@@ -221,8 +222,8 @@ export default function TeamManager({ initialTeamMembers }: TeamManagerProps) {
               <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
                 Role
               </p>
-              <p className="mt-1 text-sm capitalize text-gray-900">
-                {panelMember.role.replace("_", " ")}
+              <p className="mt-1 text-sm text-gray-900">
+                {USER_ROLE_LABELS[panelMember.role]}
               </p>
             </div>
 
