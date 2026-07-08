@@ -1,6 +1,17 @@
+"use client";
+
+import { useActionState } from "react";
 import Link from "next/link";
+import { clientLoginAction, type ClientLoginState } from "@/app/actions/clientAuth";
+
+const initialState: ClientLoginState = {};
 
 export default function ClientLoginPage() {
+  const [state, formAction, pending] = useActionState(
+    clientLoginAction,
+    initialState
+  );
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
@@ -8,24 +19,25 @@ export default function ClientLoginPage() {
           Client Login
         </h1>
         <p className="mb-6 text-sm text-gray-500">
-          Client accounts are coming soon.
+          Sign in with the username and password provided by Rokket Web
+          Development.
         </p>
 
-        <form className="flex flex-col gap-4">
+        <form action={formAction} className="flex flex-col gap-4">
           <div>
             <label
-              htmlFor="email"
+              htmlFor="username"
               className="mb-1 block text-sm font-medium text-gray-700"
             >
-              Email
+              Username
             </label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              disabled
-              className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-400"
+              id="username"
+              name="username"
+              type="text"
+              autoComplete="username"
+              required
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-black focus:outline-none"
             />
           </div>
 
@@ -41,17 +53,23 @@ export default function ClientLoginPage() {
               name="password"
               type="password"
               autoComplete="current-password"
-              disabled
-              className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-400"
+              required
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-black focus:outline-none"
             />
           </div>
 
+          {state.error && (
+            <p className="text-sm text-red-600" role="alert">
+              {state.error}
+            </p>
+          )}
+
           <button
             type="submit"
-            disabled
-            className="mt-2 w-full cursor-not-allowed rounded-md bg-gray-300 px-4 py-2 text-sm font-medium text-gray-500"
+            disabled={pending}
+            className="mt-2 w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-700 disabled:opacity-50"
           >
-            Sign in (coming soon)
+            {pending ? "Signing in..." : "Sign in"}
           </button>
         </form>
 

@@ -3,6 +3,7 @@ import AdminTabs from "@/components/admin/AdminTabs";
 import LogoutButton from "@/components/LogoutButton";
 import { listClients } from "@/lib/clientStore";
 import { listTeamMembers } from "@/lib/userStore";
+import { listOpenSupportRequestGroups } from "@/lib/supportRequestStore";
 
 // Data comes from a live database, not a static file — never prerender this
 // page at build time (which would either fail without a reachable DB or bake
@@ -10,9 +11,10 @@ import { listTeamMembers } from "@/lib/userStore";
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const [clients, teamMembers] = await Promise.all([
+  const [clients, teamMembers, supportRequestGroups] = await Promise.all([
     listClients(),
     listTeamMembers(),
+    listOpenSupportRequestGroups(),
   ]);
 
   return (
@@ -36,7 +38,11 @@ export default async function AdminDashboardPage() {
         </p>
 
         <div className="mt-8">
-          <AdminTabs initialClients={clients} initialTeamMembers={teamMembers} />
+          <AdminTabs
+            initialClients={clients}
+            initialTeamMembers={teamMembers}
+            initialSupportRequestGroups={supportRequestGroups}
+          />
         </div>
       </main>
     </div>

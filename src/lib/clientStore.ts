@@ -166,3 +166,24 @@ export async function getClientSftpCredentials(
     password: decrypt(found.encryptedSftpPassword),
   };
 }
+
+// Clients log into their own portal with the same admin username/password
+// stored for their site login (per product decision — one set of creds).
+export async function verifyClientPortalCredentials(
+  username: string,
+  password: string
+): Promise<{ id: string; name: string } | null> {
+  const collection = await getClientsCollection();
+  const found = await collection.findOne({
+    adminUsername: { $regex: `^${username.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" },
+  });
+  if (!found) return null;
+  if (decrypt(found.encryptedPassword) !== password) return null;
+  return { id: found._id, name: found.name };
+}
+
+export async function getClientById(id: string): Promise<ClientRecord | null> {
+  const collection = await getClientsCollection();
+  const found = await collection.findOne({ _id: id });
+  return found ? toPublicRecord(found) : null;
+}

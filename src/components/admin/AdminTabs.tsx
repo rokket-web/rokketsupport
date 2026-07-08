@@ -3,12 +3,15 @@
 import { useState } from "react";
 import ClientManager from "./ClientManager";
 import TeamManager from "./TeamManager";
+import SupportRequestManager from "./SupportRequestManager";
 import type { ClientRecord } from "@/lib/clients";
 import type { TeamMemberRecord } from "@/lib/userStore";
+import type { SupportRequestGroup } from "@/lib/supportRequests";
 
 const TABS = [
   { id: "clients", label: "Client Manager" },
   { id: "team", label: "Team Manager" },
+  { id: "support", label: "Support Requests" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -16,11 +19,13 @@ type TabId = (typeof TABS)[number]["id"];
 interface AdminTabsProps {
   initialClients: ClientRecord[];
   initialTeamMembers: TeamMemberRecord[];
+  initialSupportRequestGroups: SupportRequestGroup[];
 }
 
 export default function AdminTabs({
   initialClients,
   initialTeamMembers,
+  initialSupportRequestGroups,
 }: AdminTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>("clients");
 
@@ -48,10 +53,12 @@ export default function AdminTabs({
       </div>
 
       <div className="py-6">
-        {activeTab === "clients" ? (
-          <ClientManager initialClients={initialClients} />
-        ) : (
+        {activeTab === "clients" && <ClientManager initialClients={initialClients} />}
+        {activeTab === "team" && (
           <TeamManager initialTeamMembers={initialTeamMembers} />
+        )}
+        {activeTab === "support" && (
+          <SupportRequestManager initialGroups={initialSupportRequestGroups} />
         )}
       </div>
     </div>
