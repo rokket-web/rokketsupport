@@ -32,6 +32,40 @@ function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
+// Notifies a team member that a support request is (now) theirs. Failures
+// are logged, never thrown — a broken notification email must never block
+// the underlying submit/reassign action from succeeding.
+async function sendAssignmentEmail(params: {
+  to: string;
+  teamMemberName: string;
+  clientName: string;
+  websiteUrl: string;
+  issue: string;
+  description: string;
+}): Promise<void> {
+  try {
+    await sendEmail({
+      to: params.to,
+      subject: `Support request assigned to you: ${params.issue}`,
+      text: `Hi ${params.teamMemberName},\n\nYou've been assigned a support request:\n\nClient: ${params.clientName}\nWebsite: ${params.websiteUrl}\nIssue: ${params.issue}\n\n${params.description}\n\nLog into My Projects to view details and update its status.`,
+      html: `
+        <p>Hi ${escapeHtml(params.teamMemberName)},</p>
+        <p>You've been assigned a support request:</p>
+        <p><strong>Client:</strong> ${escapeHtml(params.clientName)}</p>
+        <p><strong>Website:</strong> ${escapeHtml(params.websiteUrl)}</p>
+        <p><strong>Issue:</strong> ${escapeHtml(params.issue)}</p>
+        <p>${escapeHtml(params.description).replace(/\n/g, "<br/>")}</p>
+        <p>Log into My Projects to view details and update its status.</p>
+      `,
+    });
+  } catch (error) {
+    console.error(
+      "[sendAssignmentEmail] Failed to send assignment email:",
+      error
+    );
+  }
+}
+
 export async function submitSupportRequestAction(
   formData: FormData
 ): Promise<SubmitSupportRequestResult> {
@@ -126,6 +160,20 @@ export async function submitSupportRequestAction(
     }
   }
 
+  if (client.defaultAssigneeId) {
+    const assignee = await getTeamMemberById(client.defaultAssigneeId);
+    if (assignee?.email) {
+      await sendAssignmentEmail({
+        to: assignee.email,
+        teamMemberName: assignee.name,
+        clientName: client.name,
+        websiteUrl: client.websiteUrl,
+        issue,
+        description,
+      });
+    }
+  }
+
   revalidatePath("/client-dashboard");
   revalidatePath("/admin");
   revalidatePath("/my-projects");
@@ -154,12 +202,14 @@ export async function reassignSupportRequestAction(
   assigneeId: string | null
 ): Promise<SupportRequestSummary | null> {
   let assigneeName: string | undefined;
+  let assigneeEmail: string | undefined;
   if (assigneeId) {
     const teamMember = await getTeamMemberById(assigneeId);
     if (!teamMember) {
       return null;
     }
     assigneeName = teamMember.name;
+    assigneeEmail = teamMember.email;
   }
 
   const updated = await reassignSupportRequest(
@@ -167,6 +217,21 @@ export async function reassignSupportRequestAction(
     assigneeId ?? undefined,
     assigneeName
   );
+
+  if (updated && assigneeEmail && assigneeName) {
+    const details = await getSupportRequestDetails(id);
+    if (details) {
+      await sendAssignmentEmail({
+        to: assigneeEmail,
+        teamMemberName: assigneeName,
+        clientName: details.clientName,
+        websiteUrl: details.websiteUrl,
+        issue: details.issue,
+        description: details.description,
+      });
+    }
+  }
+
   revalidatePath("/admin");
   revalidatePath("/my-projects");
   return updated;
