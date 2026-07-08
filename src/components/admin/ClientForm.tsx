@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CLIENT_PLATFORMS, type ClientPlatform } from "@/lib/clients";
+import type { TeamMemberRecord } from "@/lib/userStore";
 
 export interface ClientFormValues {
   name: string;
@@ -14,6 +15,7 @@ export interface ClientFormValues {
   sftpUsername: string;
   sftpPassword: string;
   portalUsername: string;
+  defaultAssigneeId: string;
 }
 
 const EMPTY_VALUES: ClientFormValues = {
@@ -27,6 +29,7 @@ const EMPTY_VALUES: ClientFormValues = {
   sftpUsername: "",
   sftpPassword: "",
   portalUsername: "",
+  defaultAssigneeId: "",
 };
 
 const inputClasses =
@@ -36,6 +39,7 @@ const labelClasses = "mb-1 block text-sm font-medium text-gray-700";
 interface ClientFormProps {
   initialValues?: ClientFormValues;
   submitLabel?: string;
+  teamMembers: TeamMemberRecord[];
   onSubmit: (values: ClientFormValues) => void;
   onCancel: () => void;
 }
@@ -43,6 +47,7 @@ interface ClientFormProps {
 export default function ClientForm({
   initialValues,
   submitLabel = "Save Client",
+  teamMembers,
   onSubmit,
   onCancel,
 }: ClientFormProps) {
@@ -187,6 +192,26 @@ export default function ClientForm({
         <p className="mt-1 text-xs text-gray-500">
           Separate from the website admin login above. Set or reset the
           portal password from the client&apos;s detail panel after saving.
+        </p>
+      </div>
+
+      <div className="sm:col-span-2">
+        <label className={labelClasses}>Default Assignee</label>
+        <select
+          value={values.defaultAssigneeId}
+          onChange={(e) => update("defaultAssigneeId", e.target.value)}
+          className={`${inputClasses} bg-white`}
+        >
+          <option value="">Unassigned</option>
+          {teamMembers.map((member) => (
+            <option key={member.id} value={member.id}>
+              {member.name}
+            </option>
+          ))}
+        </select>
+        <p className="mt-1 text-xs text-gray-500">
+          Support requests submitted by this client are automatically assigned
+          to this team member.
         </p>
       </div>
 

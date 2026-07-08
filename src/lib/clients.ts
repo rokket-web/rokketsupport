@@ -20,4 +20,8 @@ export interface ClientRecord {
   // other.
   portalUsername?: string;
   hasPortalPassword: boolean;
+  // Team member who should automatically receive support requests submitted
+  // by this client.
+  defaultAssigneeId?: string;
+  defaultAssigneeName?: string;
 }

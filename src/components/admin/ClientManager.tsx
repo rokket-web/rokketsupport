@@ -12,9 +12,11 @@ import {
 } from "@/app/actions/clients";
 import { loginToClientSite, normalizeUrl } from "@/lib/clientLogin";
 import type { ClientRecord } from "@/lib/clients";
+import type { TeamMemberRecord } from "@/lib/userStore";
 
 interface ClientManagerProps {
   initialClients: ClientRecord[];
+  teamMembers: TeamMemberRecord[];
 }
 
 function clientToFormValues(client: ClientRecord): ClientFormValues {
@@ -29,10 +31,11 @@ function clientToFormValues(client: ClientRecord): ClientFormValues {
     sftpUsername: client.sftpUsername ?? "",
     sftpPassword: "",
     portalUsername: client.portalUsername ?? "",
+    defaultAssigneeId: client.defaultAssigneeId ?? "",
   };
 }
 
-export default function ClientManager({ initialClients }: ClientManagerProps) {
+export default function ClientManager({ initialClients, teamMembers }: ClientManagerProps) {
   const [clients, setClients] = useState<ClientRecord[]>(initialClients);
   const [showForm, setShowForm] = useState(false);
   const [editingClient, setEditingClient] = useState<ClientRecord | null>(null);
@@ -80,6 +83,7 @@ export default function ClientManager({ initialClients }: ClientManagerProps) {
   async function handleAddClient(values: ClientFormValues) {
     setSaving(true);
     try {
+      const assignee = teamMembers.find((m) => m.id === values.defaultAssigneeId);
       const newClient = await addClientAction({
         name: values.name,
         websiteUrl: values.websiteUrl,
@@ -91,6 +95,8 @@ export default function ClientManager({ initialClients }: ClientManagerProps) {
         sftpUsername: values.sftpUsername || undefined,
         sftpPassword: values.sftpPassword || undefined,
         portalUsername: values.portalUsername || undefined,
+        defaultAssigneeId: assignee?.id,
+        defaultAssigneeName: assignee?.name,
       });
       setClients((prev) => [...prev, newClient]);
       closeForm();
@@ -103,6 +109,7 @@ export default function ClientManager({ initialClients }: ClientManagerProps) {
     if (!editingClient) return;
     setSaving(true);
     try {
+      const assignee = teamMembers.find((m) => m.id === values.defaultAssigneeId);
       const updated = await updateClientAction({
         id: editingClient.id,
         name: values.name,
@@ -115,6 +122,8 @@ export default function ClientManager({ initialClients }: ClientManagerProps) {
         sftpUsername: values.sftpUsername || undefined,
         sftpPassword: values.sftpPassword.trim() ? values.sftpPassword : undefined,
         portalUsername: values.portalUsername || undefined,
+        defaultAssigneeId: assignee?.id,
+        defaultAssigneeName: assignee?.name,
       });
       if (updated) {
         setClients((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
@@ -212,6 +221,7 @@ export default function ClientManager({ initialClients }: ClientManagerProps) {
             key={editingClient?.id ?? "new"}
             initialValues={editingClient ? clientToFormValues(editingClient) : undefined}
             submitLabel={editingClient ? "Update Client" : "Save Client"}
+            teamMembers={teamMembers}
             onSubmit={editingClient ? handleUpdateClient : handleAddClient}
             onCancel={closeForm}
           />
@@ -417,6 +427,15 @@ export default function ClientManager({ initialClients }: ClientManagerProps) {
                   onCancel={() => setShowChangePortalPassword(false)}
                 />
               )}
+            </div>
+
+            <div className="border-t border-gray-200 pt-6">
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                Default Assignee
+              </p>
+              <p className="mt-1 text-sm text-gray-900">
+                {panelClient.defaultAssigneeName || "Unassigned"}
+              </p>
             </div>
 
             <div className="mt-2 flex gap-3 border-t border-gray-200 pt-6">

@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { updateSupportRequestStatusAction } from "@/app/actions/support";
+import {
+  reassignSupportRequestAction,
+  updateSupportRequestStatusAction,
+} from "@/app/actions/support";
 import {
   SUPPORT_REQUEST_STATUSES,
   SUPPORT_REQUEST_STATUS_COLORS,
@@ -9,20 +12,32 @@ import {
   type SupportRequestDetails,
   type SupportRequestStatus,
 } from "@/lib/supportRequests";
+import type { TeamMemberRecord } from "@/lib/userStore";
 
 interface SupportRequestModalProps {
   request: SupportRequestDetails;
   onClose: () => void;
   onStatusChange: (id: string, status: SupportRequestStatus) => void;
+  // Only pass teamMembers (and handle onAssigneeChange) for admin-facing
+  // usage — omitting it hides the reassignment control entirely, which is
+  // how the team member's own dashboard uses this same modal.
+  teamMembers?: TeamMemberRecord[];
+  onAssigneeChange?: (id: string, assigneeId?: string, assigneeName?: string) => void;
 }
+
+const UNASSIGNED = "__unassigned__";
 
 export default function SupportRequestModal({
   request,
   onClose,
   onStatusChange,
+  teamMembers,
+  onAssigneeChange,
 }: SupportRequestModalProps) {
   const [status, setStatus] = useState<SupportRequestStatus>(request.status);
   const [saving, setSaving] = useState(false);
+  const [assigneeId, setAssigneeId] = useState(request.assigneeId ?? UNASSIGNED);
+  const [reassigning, setReassigning] = useState(false);
 
   async function handleStatusChange(newStatus: SupportRequestStatus) {
     setStatus(newStatus);
@@ -32,6 +47,20 @@ export default function SupportRequestModal({
       onStatusChange(request.id, newStatus);
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleAssigneeChange(newAssigneeId: string) {
+    setAssigneeId(newAssigneeId);
+    setReassigning(true);
+    try {
+      const updated = await reassignSupportRequestAction(
+        request.id,
+        newAssigneeId === UNASSIGNED ? null : newAssigneeId
+      );
+      onAssigneeChange?.(request.id, updated?.assigneeId, updated?.assigneeName);
+    } finally {
+      setReassigning(false);
     }
   }
 
@@ -71,6 +100,27 @@ export default function SupportRequestModal({
               ))}
             </select>
           </div>
+
+          {teamMembers && (
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                Assigned To
+              </p>
+              <select
+                value={assigneeId}
+                disabled={reassigning}
+                onChange={(e) => handleAssigneeChange(e.target.value)}
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-black focus:outline-none disabled:opacity-50"
+              >
+                <option value={UNASSIGNED}>Unassigned</option>
+                {teamMembers.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-gray-500">

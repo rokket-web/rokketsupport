@@ -1,9 +1,21 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import LogoutButton from "@/components/LogoutButton";
+import MyAssignedRequests from "@/components/MyAssignedRequests";
 import { getSession } from "@/lib/auth";
+import { listSupportRequestGroupsForAssignee } from "@/lib/supportRequestStore";
+
+// Data comes from a live database, not a static file — never prerender this
+// page at build time.
+export const dynamic = "force-dynamic";
 
 export default async function MyProjectsPage() {
   const session = await getSession();
+  if (!session) {
+    redirect("/login/team");
+  }
+
+  const groups = await listSupportRequestGroupsForAssignee(session.id);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -21,14 +33,10 @@ export default async function MyProjectsPage() {
 
       <main className="mx-auto max-w-4xl px-6 py-10">
         <h1 className="text-2xl font-bold text-gray-900">My Projects</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          {session
-            ? `Welcome back, ${session.name}.`
-            : "Welcome back."}
-        </p>
+        <p className="mt-1 text-sm text-gray-500">Welcome back, {session.name}.</p>
 
-        <div className="mt-8 rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-400">
-          No projects yet. Assigned projects will show up here.
+        <div className="mt-8">
+          <MyAssignedRequests initialGroups={groups} />
         </div>
       </main>
     </div>

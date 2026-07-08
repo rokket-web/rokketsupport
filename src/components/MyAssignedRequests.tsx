@@ -1,14 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getSupportRequestDetailsAction } from "@/app/actions/support";
-import SupportRequestModal from "@/components/SupportRequestModal";
 import SupportRequestGroupSection from "@/components/SupportRequestGroupSection";
-import {
-  addGroupItem,
-  removeGroupItem,
-  updateGroupItem,
-} from "@/lib/supportRequestGroups";
+import SupportRequestModal from "@/components/SupportRequestModal";
+import { addGroupItem, removeGroupItem } from "@/lib/supportRequestGroups";
 import type {
   SupportRequestDetails,
   SupportRequestGroup,
@@ -16,35 +12,22 @@ import type {
   SupportRequestStatus,
   SupportRequestSummary,
 } from "@/lib/supportRequests";
-import type { TeamMemberRecord } from "@/lib/userStore";
 
-interface SupportRequestManagerProps {
+interface MyAssignedRequestsProps {
   initialGroups: SupportRequestGroups;
-  teamMembers: TeamMemberRecord[];
-  onActiveCountChange?: (count: number) => void;
 }
 
-export default function SupportRequestManager({
-  initialGroups,
-  teamMembers,
-  onActiveCountChange,
-}: SupportRequestManagerProps) {
+export default function MyAssignedRequests({ initialGroups }: MyAssignedRequestsProps) {
   const [activeGroups, setActiveGroups] = useState<SupportRequestGroup[]>(
     initialGroups.active
   );
   const [completedGroups, setCompletedGroups] = useState<SupportRequestGroup[]>(
     initialGroups.completed
   );
-  const [selectedRequest, setSelectedRequest] =
-    useState<SupportRequestDetails | null>(null);
+  const [selectedRequest, setSelectedRequest] = useState<SupportRequestDetails | null>(
+    null
+  );
   const [loadingId, setLoadingId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const count = activeGroups.reduce((sum, group) => sum + group.items.length, 0);
-    onActiveCountChange?.(count);
-    // onActiveCountChange intentionally omitted — only re-run when the counts themselves change.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeGroups]);
 
   async function openItem(id: string) {
     setLoadingId(id);
@@ -75,23 +58,14 @@ export default function SupportRequestManager({
     }
   }
 
-  function handleAssigneeChange(id: string, assigneeId?: string, assigneeName?: string) {
-    setSelectedRequest((prev) =>
-      prev && prev.id === id ? { ...prev, assigneeId, assigneeName } : prev
-    );
-    setActiveGroups((prev) => updateGroupItem(prev, id, { assigneeId, assigneeName }));
-    setCompletedGroups((prev) => updateGroupItem(prev, id, { assigneeId, assigneeName }));
-  }
-
   return (
     <div className="flex flex-col gap-10">
       <SupportRequestGroupSection
         title="Active Support Items"
         groups={activeGroups}
-        emptyMessage="No active support requests."
+        emptyMessage="No active support requests assigned to you."
         loadingId={loadingId}
         onOpenItem={openItem}
-        showAssignee
       />
 
       <SupportRequestGroupSection
@@ -100,7 +74,6 @@ export default function SupportRequestManager({
         emptyMessage="No completed support requests yet."
         loadingId={loadingId}
         onOpenItem={openItem}
-        showAssignee
       />
 
       {selectedRequest && (
@@ -108,8 +81,6 @@ export default function SupportRequestManager({
           request={selectedRequest}
           onClose={() => setSelectedRequest(null)}
           onStatusChange={handleStatusChange}
-          teamMembers={teamMembers}
-          onAssigneeChange={handleAssigneeChange}
         />
       )}
     </div>

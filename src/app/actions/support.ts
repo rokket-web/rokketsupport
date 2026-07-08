@@ -3,9 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { getClientSession } from "@/lib/clientAuth";
 import { getClientById } from "@/lib/clientStore";
+import { getTeamMemberById } from "@/lib/userStore";
 import {
   addSupportRequest,
   getSupportRequestDetails,
+  reassignSupportRequest,
   updateSupportRequestStatus,
 } from "@/lib/supportRequestStore";
 import { sendEmail } from "@/lib/mail";
@@ -86,6 +88,8 @@ export async function submitSupportRequestAction(
     issue,
     description,
     images: images.map(({ contentType, data }) => ({ contentType, data })),
+    assigneeId: client.defaultAssigneeId,
+    assigneeName: client.defaultAssigneeName,
   });
 
   const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
@@ -110,6 +114,7 @@ export async function submitSupportRequestAction(
 
   revalidatePath("/client-dashboard");
   revalidatePath("/admin");
+  revalidatePath("/my-projects");
   return { success: true, request };
 }
 
@@ -126,5 +131,29 @@ export async function updateSupportRequestStatusAction(
   const updated = await updateSupportRequestStatus(id, status);
   revalidatePath("/admin");
   revalidatePath("/client-dashboard");
+  revalidatePath("/my-projects");
+  return updated;
+}
+
+export async function reassignSupportRequestAction(
+  id: string,
+  assigneeId: string | null
+): Promise<SupportRequestSummary | null> {
+  let assigneeName: string | undefined;
+  if (assigneeId) {
+    const teamMember = await getTeamMemberById(assigneeId);
+    if (!teamMember) {
+      return null;
+    }
+    assigneeName = teamMember.name;
+  }
+
+  const updated = await reassignSupportRequest(
+    id,
+    assigneeId ?? undefined,
+    assigneeName
+  );
+  revalidatePath("/admin");
+  revalidatePath("/my-projects");
   return updated;
 }

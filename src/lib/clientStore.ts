@@ -25,6 +25,8 @@ interface ClientDoc {
   encryptedSftpPassword?: string;
   portalUsername?: string;
   portalPasswordHash?: string;
+  defaultAssigneeId?: string;
+  defaultAssigneeName?: string;
   createdAt: Date;
 }
 
@@ -39,6 +41,8 @@ export interface AddClientInput {
   sftpUsername?: string;
   sftpPassword?: string;
   portalUsername?: string;
+  defaultAssigneeId?: string;
+  defaultAssigneeName?: string;
 }
 
 export interface UpdateClientInput {
@@ -55,6 +59,8 @@ export interface UpdateClientInput {
   // Omit or leave blank to keep the existing SFTP password.
   sftpPassword?: string;
   portalUsername?: string;
+  defaultAssigneeId?: string;
+  defaultAssigneeName?: string;
 }
 
 async function getClientsCollection() {
@@ -99,6 +105,8 @@ function toPublicRecord(doc: ClientDoc): ClientRecord {
     hasSftpPassword: Boolean(doc.encryptedSftpPassword),
     portalUsername: doc.portalUsername,
     hasPortalPassword: Boolean(doc.portalPasswordHash),
+    defaultAssigneeId: doc.defaultAssigneeId,
+    defaultAssigneeName: doc.defaultAssigneeName,
   };
 }
 
@@ -122,6 +130,8 @@ export async function addClient(input: AddClientInput): Promise<ClientRecord> {
     sftpUsername: input.sftpUsername || undefined,
     encryptedSftpPassword: input.sftpPassword ? encrypt(input.sftpPassword) : undefined,
     portalUsername: input.portalUsername || undefined,
+    defaultAssigneeId: input.defaultAssigneeId || undefined,
+    defaultAssigneeName: input.defaultAssigneeName || undefined,
     createdAt: new Date(),
   };
   await collection.insertOne(doc);
@@ -149,6 +159,8 @@ export async function updateClient(
       ? encrypt(input.sftpPassword)
       : existing.encryptedSftpPassword,
     portalUsername: input.portalUsername || undefined,
+    defaultAssigneeId: input.defaultAssigneeId || undefined,
+    defaultAssigneeName: input.defaultAssigneeName || undefined,
   };
 
   await collection.replaceOne({ _id: input.id }, updated);

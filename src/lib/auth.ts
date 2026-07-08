@@ -5,6 +5,7 @@ import type { UserRole } from "@/lib/users";
 const SESSION_COOKIE = "rws_session";
 
 export interface Session {
+  id: string;
   username: string;
   name: string;
   role: UserRole;
@@ -21,7 +22,7 @@ export async function verifyTeamMemberCredentials(
 
   return {
     success: true,
-    session: { username: user.username, name: user.name, role: user.role },
+    session: { id: user.id, username: user.username, name: user.name, role: user.role },
   };
 }
 

@@ -64,13 +64,19 @@ export default function AdminTabs({
       </div>
 
       <div className="py-6">
-        {activeTab === "clients" && <ClientManager initialClients={initialClients} />}
+        {activeTab === "clients" && (
+          <ClientManager
+            initialClients={initialClients}
+            teamMembers={initialTeamMembers}
+          />
+        )}
         {activeTab === "team" && (
           <TeamManager initialTeamMembers={initialTeamMembers} />
         )}
         {activeTab === "support" && (
           <SupportRequestManager
             initialGroups={initialSupportRequestGroups}
+            teamMembers={initialTeamMembers}
             onActiveCountChange={setActiveRequestCount}
           />
         )}

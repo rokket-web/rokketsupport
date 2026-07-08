@@ -31,6 +31,8 @@ export interface SupportRequestSummary {
   websiteUrl: string;
   issue: string;
   status: SupportRequestStatus;
+  assigneeId?: string;
+  assigneeName?: string;
   createdAt: string;
 }
 

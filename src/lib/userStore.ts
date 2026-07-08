@@ -70,6 +70,12 @@ export async function listTeamMembers(): Promise<TeamMemberRecord[]> {
   return docs.map(toPublicRecord);
 }
 
+export async function getTeamMemberById(id: string): Promise<TeamMemberRecord | null> {
+  const collection = await getUsersCollection();
+  const found = await collection.findOne({ _id: id });
+  return found ? toPublicRecord(found) : null;
+}
+
 export async function addTeamMember(
   input: AddTeamMemberInput
 ): Promise<TeamMemberRecord> {

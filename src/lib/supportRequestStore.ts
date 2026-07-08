@@ -23,6 +23,8 @@ interface SupportRequestDoc {
   description: string;
   images: SupportRequestImageDoc[];
   status: SupportRequestStatus;
+  assigneeId?: string;
+  assigneeName?: string;
   createdAt: Date;
 }
 
@@ -33,6 +35,8 @@ export interface AddSupportRequestInput {
   issue: string;
   description: string;
   images: SupportRequestImageDoc[];
+  assigneeId?: string;
+  assigneeName?: string;
 }
 
 async function getCollection() {
@@ -58,6 +62,8 @@ function toSummary(doc: SupportRequestDoc): SupportRequestSummary {
     websiteUrl: doc.websiteUrl,
     issue: doc.issue,
     status: normalizeStatus(doc.status),
+    assigneeId: doc.assigneeId,
+    assigneeName: doc.assigneeName,
     createdAt: doc.createdAt.toISOString(),
   };
 }
@@ -86,6 +92,8 @@ export async function addSupportRequest(
     description: input.description,
     images: input.images,
     status: "active",
+    assigneeId: input.assigneeId,
+    assigneeName: input.assigneeName,
     createdAt: new Date(),
   };
   await collection.insertOne(doc);
@@ -103,10 +111,7 @@ export async function listSupportRequestsForClient(
   return docs.map(toSummary);
 }
 
-export async function listSupportRequestGroups(): Promise<SupportRequestGroups> {
-  const collection = await getCollection();
-  const docs = await collection.find().sort({ createdAt: -1 }).toArray();
-
+function groupDocs(docs: SupportRequestDoc[]): SupportRequestGroups {
   const activeGroups = new Map<string, SupportRequestGroup>();
   const completedGroups = new Map<string, SupportRequestGroup>();
 
@@ -131,6 +136,23 @@ export async function listSupportRequestGroups(): Promise<SupportRequestGroups> 
   };
 }
 
+export async function listSupportRequestGroups(): Promise<SupportRequestGroups> {
+  const collection = await getCollection();
+  const docs = await collection.find().sort({ createdAt: -1 }).toArray();
+  return groupDocs(docs);
+}
+
+export async function listSupportRequestGroupsForAssignee(
+  assigneeId: string
+): Promise<SupportRequestGroups> {
+  const collection = await getCollection();
+  const docs = await collection
+    .find({ assigneeId })
+    .sort({ createdAt: -1 })
+    .toArray();
+  return groupDocs(docs);
+}
+
 export async function getSupportRequestDetails(
   id: string
 ): Promise<SupportRequestDetails | null> {
@@ -147,6 +169,22 @@ export async function updateSupportRequestStatus(
   const result = await collection.findOneAndUpdate(
     { _id: id },
     { $set: { status } },
+    { returnDocument: "after" }
+  );
+  return result ? toSummary(result) : null;
+}
+
+export async function reassignSupportRequest(
+  id: string,
+  assigneeId: string | undefined,
+  assigneeName: string | undefined
+): Promise<SupportRequestSummary | null> {
+  const collection = await getCollection();
+  const result = await collection.findOneAndUpdate(
+    { _id: id },
+    assigneeId
+      ? { $set: { assigneeId, assigneeName } }
+      : { $unset: { assigneeId: "", assigneeName: "" } },
     { returnDocument: "after" }
   );
   return result ? toSummary(result) : null;
