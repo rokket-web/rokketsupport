@@ -4,6 +4,7 @@ import { useState } from "react";
 import ClientManager from "./ClientManager";
 import TeamManager from "./TeamManager";
 import SupportRequestManager from "./SupportRequestManager";
+import EmailDiagnostics from "./EmailDiagnostics";
 import type { ClientRecord } from "@/lib/clients";
 import type { TeamMemberRecord } from "@/lib/userStore";
 import type { SupportRequestGroups } from "@/lib/supportRequests";
@@ -12,6 +13,7 @@ const TABS = [
   { id: "clients", label: "Client Manager" },
   { id: "team", label: "Team Manager" },
   { id: "support", label: "Support Requests" },
+  { id: "diagnostics", label: "Diagnostics" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -80,6 +82,7 @@ export default function AdminTabs({
             onActiveCountChange={setActiveRequestCount}
           />
         )}
+        {activeTab === "diagnostics" && <EmailDiagnostics />}
       </div>
     </div>
   );

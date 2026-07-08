@@ -92,24 +92,38 @@ export async function submitSupportRequestAction(
     assigneeName: client.defaultAssigneeName,
   });
 
+  // A failed or misconfigured notification email must never block the
+  // client's request from being saved — log it clearly (visible in the
+  // host's function logs) instead of throwing.
   const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
-  if (adminEmail) {
-    await sendEmail({
-      to: adminEmail,
-      subject: `Support request: ${client.name} — ${issue}`,
-      text: `Client: ${client.name}\nWebsite: ${client.websiteUrl}\nIssue: ${issue}\n\n${description}`,
-      html: `
-        <p><strong>Client:</strong> ${escapeHtml(client.name)}</p>
-        <p><strong>Website:</strong> ${escapeHtml(client.websiteUrl)}</p>
-        <p><strong>Issue:</strong> ${escapeHtml(issue)}</p>
-        <p>${escapeHtml(description).replace(/\n/g, "<br/>")}</p>
-      `,
-      attachments: images.map((img, index) => ({
-        filename: img.filename || `screenshot-${index + 1}`,
-        content: img.data,
-        contentType: img.contentType,
-      })),
-    });
+  if (!adminEmail) {
+    console.warn(
+      "[submitSupportRequestAction] ADMIN_NOTIFICATION_EMAIL is not set — skipping notification email. Set it in your hosting provider's environment variables to enable notifications."
+    );
+  } else {
+    try {
+      await sendEmail({
+        to: adminEmail,
+        subject: `Support request: ${client.name} — ${issue}`,
+        text: `Client: ${client.name}\nWebsite: ${client.websiteUrl}\nIssue: ${issue}\n\n${description}`,
+        html: `
+          <p><strong>Client:</strong> ${escapeHtml(client.name)}</p>
+          <p><strong>Website:</strong> ${escapeHtml(client.websiteUrl)}</p>
+          <p><strong>Issue:</strong> ${escapeHtml(issue)}</p>
+          <p>${escapeHtml(description).replace(/\n/g, "<br/>")}</p>
+        `,
+        attachments: images.map((img, index) => ({
+          filename: img.filename || `screenshot-${index + 1}`,
+          content: img.data,
+          contentType: img.contentType,
+        })),
+      });
+    } catch (error) {
+      console.error(
+        "[submitSupportRequestAction] Failed to send notification email:",
+        error
+      );
+    }
   }
 
   revalidatePath("/client-dashboard");
