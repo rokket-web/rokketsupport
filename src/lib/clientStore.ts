@@ -1,5 +1,6 @@
 import "server-only";
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
 import { getDb } from "@/lib/db";
 import type { ClientPlatform, ClientRecord } from "@/lib/clients";
 
@@ -22,6 +23,8 @@ interface ClientDoc {
   encryptedPassword: string;
   sftpUsername?: string;
   encryptedSftpPassword?: string;
+  portalUsername?: string;
+  portalPasswordHash?: string;
   createdAt: Date;
 }
 
@@ -35,6 +38,7 @@ export interface AddClientInput {
   password: string;
   sftpUsername?: string;
   sftpPassword?: string;
+  portalUsername?: string;
 }
 
 export interface UpdateClientInput {
@@ -50,6 +54,7 @@ export interface UpdateClientInput {
   sftpUsername?: string;
   // Omit or leave blank to keep the existing SFTP password.
   sftpPassword?: string;
+  portalUsername?: string;
 }
 
 async function getClientsCollection() {
@@ -92,6 +97,8 @@ function toPublicRecord(doc: ClientDoc): ClientRecord {
     adminUsername: doc.adminUsername,
     sftpUsername: doc.sftpUsername,
     hasSftpPassword: Boolean(doc.encryptedSftpPassword),
+    portalUsername: doc.portalUsername,
+    hasPortalPassword: Boolean(doc.portalPasswordHash),
   };
 }
 
@@ -114,6 +121,7 @@ export async function addClient(input: AddClientInput): Promise<ClientRecord> {
     encryptedPassword: encrypt(input.password),
     sftpUsername: input.sftpUsername || undefined,
     encryptedSftpPassword: input.sftpPassword ? encrypt(input.sftpPassword) : undefined,
+    portalUsername: input.portalUsername || undefined,
     createdAt: new Date(),
   };
   await collection.insertOne(doc);
@@ -140,6 +148,7 @@ export async function updateClient(
     encryptedSftpPassword: input.sftpPassword
       ? encrypt(input.sftpPassword)
       : existing.encryptedSftpPassword,
+    portalUsername: input.portalUsername || undefined,
   };
 
   await collection.replaceOne({ _id: input.id }, updated);
@@ -167,19 +176,37 @@ export async function getClientSftpCredentials(
   };
 }
 
-// Clients log into their own portal with the same admin username/password
-// stored for their site login (per product decision — one set of creds).
+// Clients log into their own portal with a dedicated username/password,
+// separate from the website admin login above — bcrypt-hashed like team
+// members since we only ever need to verify it, never retrieve it.
 export async function verifyClientPortalCredentials(
   username: string,
   password: string
 ): Promise<{ id: string; name: string } | null> {
   const collection = await getClientsCollection();
   const found = await collection.findOne({
-    adminUsername: { $regex: `^${username.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" },
+    portalUsername: {
+      $regex: `^${username.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+      $options: "i",
+    },
   });
-  if (!found) return null;
-  if (decrypt(found.encryptedPassword) !== password) return null;
+  if (!found || !found.portalPasswordHash) return null;
+  const matches = await bcrypt.compare(password, found.portalPasswordHash);
+  if (!matches) return null;
   return { id: found._id, name: found.name };
+}
+
+export async function setClientPortalPassword(
+  id: string,
+  newPassword: string
+): Promise<boolean> {
+  const collection = await getClientsCollection();
+  const portalPasswordHash = await bcrypt.hash(newPassword, 10);
+  const result = await collection.updateOne(
+    { _id: id },
+    { $set: { portalPasswordHash } }
+  );
+  return result.matchedCount > 0;
 }
 
 export async function getClientById(id: string): Promise<ClientRecord | null> {

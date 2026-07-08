@@ -13,6 +13,7 @@ export interface ClientFormValues {
   password: string;
   sftpUsername: string;
   sftpPassword: string;
+  portalUsername: string;
 }
 
 const EMPTY_VALUES: ClientFormValues = {
@@ -25,6 +26,7 @@ const EMPTY_VALUES: ClientFormValues = {
   password: "",
   sftpUsername: "",
   sftpPassword: "",
+  portalUsername: "",
 };
 
 const inputClasses =
@@ -172,6 +174,20 @@ export default function ClientForm({
           onChange={(e) => update("sftpPassword", e.target.value)}
           className={inputClasses}
         />
+      </div>
+
+      <div className="sm:col-span-2">
+        <label className={labelClasses}>Portal Username</label>
+        <input
+          placeholder="Username for this client's support portal login"
+          value={values.portalUsername}
+          onChange={(e) => update("portalUsername", e.target.value)}
+          className={inputClasses}
+        />
+        <p className="mt-1 text-xs text-gray-500">
+          Separate from the website admin login above. Set or reset the
+          portal password from the client&apos;s detail panel after saving.
+        </p>
       </div>
 
       <div className="flex items-end gap-3 sm:col-span-2">

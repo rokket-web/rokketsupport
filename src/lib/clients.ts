@@ -1,10 +1,10 @@
 export const CLIENT_PLATFORMS = ["WordPress", "Webflow", "Next", "Other"] as const;
 export type ClientPlatform = (typeof CLIENT_PLATFORMS)[number];
 
-// Public shape sent to the browser — deliberately excludes both passwords
-// (even encrypted) so they're never present in page data or client state.
-// hasSftpPassword only signals whether one is set, for the UI to decide
-// whether to render a Copy button.
+// Public shape sent to the browser — deliberately excludes all passwords
+// (even encrypted/hashed) so they're never present in page data or client
+// state. hasSftpPassword / hasPortalPassword only signal whether one is set,
+// for the UI to decide whether to render a Copy/Reset button.
 export interface ClientRecord {
   id: string;
   name: string;
@@ -15,4 +15,9 @@ export interface ClientRecord {
   adminUsername: string;
   sftpUsername?: string;
   hasSftpPassword: boolean;
+  // Separate credentials used to log into this support portal — decoupled
+  // from the website admin login above so resetting one never affects the
+  // other.
+  portalUsername?: string;
+  hasPortalPassword: boolean;
 }

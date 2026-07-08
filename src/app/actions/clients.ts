@@ -5,6 +5,7 @@ import {
   addClient,
   getClientCredentials,
   getClientSftpCredentials,
+  setClientPortalPassword,
   updateClient,
   type AddClientInput,
   type UpdateClientInput,
@@ -35,4 +36,13 @@ export async function getClientSftpCredentialsAction(
   id: string
 ): Promise<{ username: string; password: string } | null> {
   return getClientSftpCredentials(id);
+}
+
+export async function setClientPortalPasswordAction(
+  id: string,
+  newPassword: string
+): Promise<boolean> {
+  const result = await setClientPortalPassword(id, newPassword);
+  revalidatePath("/admin");
+  return result;
 }

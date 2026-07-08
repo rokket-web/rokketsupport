@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import ClientForm, { type ClientFormValues } from "./ClientForm";
+import ChangePasswordForm from "./ChangePasswordForm";
 import {
   addClientAction,
   getClientCredentialsAction,
   getClientSftpCredentialsAction,
+  setClientPortalPasswordAction,
   updateClientAction,
 } from "@/app/actions/clients";
 import { loginToClientSite, normalizeUrl } from "@/lib/clientLogin";
@@ -26,6 +28,7 @@ function clientToFormValues(client: ClientRecord): ClientFormValues {
     password: "",
     sftpUsername: client.sftpUsername ?? "",
     sftpPassword: "",
+    portalUsername: client.portalUsername ?? "",
   };
 }
 
@@ -40,6 +43,8 @@ export default function ClientManager({ initialClients }: ClientManagerProps) {
   const [copiedPasswordId, setCopiedPasswordId] = useState<string | null>(null);
   const [copyingSftpPasswordId, setCopyingSftpPasswordId] = useState<string | null>(null);
   const [copiedSftpPasswordId, setCopiedSftpPasswordId] = useState<string | null>(null);
+  const [showChangePortalPassword, setShowChangePortalPassword] = useState(false);
+  const [portalPasswordChangedId, setPortalPasswordChangedId] = useState<string | null>(null);
 
   // selectedClientId drives the slide-in/out animation; panelClient holds the
   // last-opened client so the panel's content doesn't disappear mid-animation
@@ -65,6 +70,7 @@ export default function ClientManager({ initialClients }: ClientManagerProps) {
   function openDetails(client: ClientRecord) {
     setPanelClient(client);
     setSelectedClientId(client.id);
+    setShowChangePortalPassword(false);
   }
 
   function closeDetails() {
@@ -84,6 +90,7 @@ export default function ClientManager({ initialClients }: ClientManagerProps) {
         password: values.password,
         sftpUsername: values.sftpUsername || undefined,
         sftpPassword: values.sftpPassword || undefined,
+        portalUsername: values.portalUsername || undefined,
       });
       setClients((prev) => [...prev, newClient]);
       closeForm();
@@ -107,6 +114,7 @@ export default function ClientManager({ initialClients }: ClientManagerProps) {
         password: values.password.trim() ? values.password : undefined,
         sftpUsername: values.sftpUsername || undefined,
         sftpPassword: values.sftpPassword.trim() ? values.sftpPassword : undefined,
+        portalUsername: values.portalUsername || undefined,
       });
       if (updated) {
         setClients((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
@@ -167,6 +175,20 @@ export default function ClientManager({ initialClients }: ClientManagerProps) {
     } finally {
       setCopyingSftpPasswordId(null);
     }
+  }
+
+  async function handleChangePortalPassword(newPassword: string) {
+    if (!panelClient) return;
+    await setClientPortalPasswordAction(panelClient.id, newPassword);
+    setShowChangePortalPassword(false);
+    setPanelClient((prev) => (prev ? { ...prev, hasPortalPassword: true } : prev));
+    setClients((prev) =>
+      prev.map((c) => (c.id === panelClient.id ? { ...c, hasPortalPassword: true } : c))
+    );
+    setPortalPasswordChangedId(panelClient.id);
+    setTimeout(() => {
+      setPortalPasswordChangedId((current) => (current === panelClient.id ? null : current));
+    }, 2000);
   }
 
   const isPanelOpen = selectedClientId !== null;
@@ -355,6 +377,45 @@ export default function ClientManager({ initialClients }: ClientManagerProps) {
                 </div>
               ) : (
                 <p className="mt-1 text-sm text-gray-400">—</p>
+              )}
+            </div>
+
+            <div className="border-t border-gray-200 pt-6">
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                Portal Username
+              </p>
+              <p className="mt-1 text-sm text-gray-900">
+                {panelClient.portalUsername || "—"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                Portal Password
+              </p>
+              <div className="mt-1 flex items-center gap-2">
+                <span className="tracking-widest text-gray-400">
+                  {panelClient.hasPortalPassword ? "••••••••" : "Not set"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowChangePortalPassword((prev) => !prev)}
+                  className="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  {portalPasswordChangedId === panelClient.id
+                    ? "Changed!"
+                    : showChangePortalPassword
+                      ? "Cancel"
+                      : panelClient.hasPortalPassword
+                        ? "Reset Password"
+                        : "Set Password"}
+                </button>
+              </div>
+              {showChangePortalPassword && (
+                <ChangePasswordForm
+                  onSubmit={handleChangePortalPassword}
+                  onCancel={() => setShowChangePortalPassword(false)}
+                />
               )}
             </div>
 
