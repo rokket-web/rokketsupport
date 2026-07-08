@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { submitSupportRequestAction } from "@/app/actions/support";
+import SupportStatusBadge from "@/components/SupportStatusBadge";
 import type { SupportRequestSummary } from "@/lib/supportRequests";
 
 interface SupportRequestSectionProps {
@@ -99,7 +100,10 @@ export default function SupportRequestSection({
         <ul className="mt-6 divide-y divide-gray-200 overflow-hidden rounded-xl border border-gray-200 bg-white">
           {requests.map((request) => (
             <li key={request.id} className="px-4 py-3">
-              <p className="text-sm font-medium text-gray-900">{request.issue}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium text-gray-900">{request.issue}</p>
+                <SupportStatusBadge status={request.status} />
+              </div>
               <p className="mt-1 text-xs text-gray-500">
                 Submitted {new Date(request.createdAt).toLocaleDateString()}
               </p>

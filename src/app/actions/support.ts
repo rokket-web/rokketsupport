@@ -6,10 +6,12 @@ import { getClientById } from "@/lib/clientStore";
 import {
   addSupportRequest,
   getSupportRequestDetails,
+  updateSupportRequestStatus,
 } from "@/lib/supportRequestStore";
 import { sendEmail } from "@/lib/mail";
 import type {
   SupportRequestDetails,
+  SupportRequestStatus,
   SupportRequestSummary,
 } from "@/lib/supportRequests";
 
@@ -115,4 +117,14 @@ export async function getSupportRequestDetailsAction(
   id: string
 ): Promise<SupportRequestDetails | null> {
   return getSupportRequestDetails(id);
+}
+
+export async function updateSupportRequestStatusAction(
+  id: string,
+  status: SupportRequestStatus
+): Promise<SupportRequestSummary | null> {
+  const updated = await updateSupportRequestStatus(id, status);
+  revalidatePath("/admin");
+  revalidatePath("/client-dashboard");
+  return updated;
 }

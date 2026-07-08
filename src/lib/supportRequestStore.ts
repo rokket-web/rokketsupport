@@ -5,6 +5,7 @@ import type {
   SupportRequestSummary,
   SupportRequestDetails,
   SupportRequestGroup,
+  SupportRequestStatus,
 } from "@/lib/supportRequests";
 
 interface SupportRequestImageDoc {
@@ -20,7 +21,7 @@ interface SupportRequestDoc {
   issue: string;
   description: string;
   images: SupportRequestImageDoc[];
-  status: "open" | "closed";
+  status: SupportRequestStatus;
   createdAt: Date;
 }
 
@@ -45,6 +46,7 @@ function toSummary(doc: SupportRequestDoc): SupportRequestSummary {
     clientName: doc.clientName,
     websiteUrl: doc.websiteUrl,
     issue: doc.issue,
+    status: doc.status,
     createdAt: doc.createdAt.toISOString(),
   };
 }
@@ -72,7 +74,7 @@ export async function addSupportRequest(
     issue: input.issue,
     description: input.description,
     images: input.images,
-    status: "open",
+    status: "active",
     createdAt: new Date(),
   };
   await collection.insertOne(doc);
@@ -84,7 +86,7 @@ export async function listSupportRequestsForClient(
 ): Promise<SupportRequestSummary[]> {
   const collection = await getCollection();
   const docs = await collection
-    .find({ clientId, status: "open" })
+    .find({ clientId, status: { $ne: "complete" } })
     .sort({ createdAt: -1 })
     .toArray();
   return docs.map(toSummary);
@@ -93,7 +95,7 @@ export async function listSupportRequestsForClient(
 export async function listOpenSupportRequestGroups(): Promise<SupportRequestGroup[]> {
   const collection = await getCollection();
   const docs = await collection
-    .find({ status: "open" })
+    .find({ status: { $ne: "complete" } })
     .sort({ createdAt: -1 })
     .toArray();
 
@@ -120,4 +122,17 @@ export async function getSupportRequestDetails(
   const collection = await getCollection();
   const found = await collection.findOne({ _id: id });
   return found ? toDetails(found) : null;
+}
+
+export async function updateSupportRequestStatus(
+  id: string,
+  status: SupportRequestStatus
+): Promise<SupportRequestSummary | null> {
+  const collection = await getCollection();
+  const result = await collection.findOneAndUpdate(
+    { _id: id },
+    { $set: { status } },
+    { returnDocument: "after" }
+  );
+  return result ? toSummary(result) : null;
 }

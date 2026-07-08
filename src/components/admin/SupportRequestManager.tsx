@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { getSupportRequestDetailsAction } from "@/app/actions/support";
 import SupportRequestModal from "./SupportRequestModal";
+import SupportStatusBadge from "@/components/SupportStatusBadge";
 import type {
   SupportRequestDetails,
   SupportRequestGroup,
+  SupportRequestStatus,
 } from "@/lib/supportRequests";
 
 interface SupportRequestManagerProps {
@@ -15,7 +17,7 @@ interface SupportRequestManagerProps {
 export default function SupportRequestManager({
   initialGroups,
 }: SupportRequestManagerProps) {
-  const [groups] = useState<SupportRequestGroup[]>(initialGroups);
+  const [groups, setGroups] = useState<SupportRequestGroup[]>(initialGroups);
   const [expandedClientId, setExpandedClientId] = useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] =
     useState<SupportRequestDetails | null>(null);
@@ -33,6 +35,26 @@ export default function SupportRequestManager({
     } finally {
       setLoadingId(null);
     }
+  }
+
+  function handleStatusChange(id: string, status: SupportRequestStatus) {
+    setSelectedRequest((prev) => (prev && prev.id === id ? { ...prev, status } : prev));
+
+    setGroups((prev) =>
+      prev
+        .map((group) => {
+          if (status === "complete") {
+            return { ...group, items: group.items.filter((item) => item.id !== id) };
+          }
+          return {
+            ...group,
+            items: group.items.map((item) =>
+              item.id === id ? { ...item, status } : item
+            ),
+          };
+        })
+        .filter((group) => group.items.length > 0)
+    );
   }
 
   return (
@@ -79,7 +101,10 @@ export default function SupportRequestManager({
                           disabled={loadingId === item.id}
                           className="flex w-full items-center justify-between px-8 py-2.5 text-left text-sm hover:bg-gray-100 disabled:opacity-50"
                         >
-                          <span className="text-gray-800">{item.issue}</span>
+                          <span className="flex items-center gap-2">
+                            <span className="text-gray-800">{item.issue}</span>
+                            <SupportStatusBadge status={item.status} />
+                          </span>
                           <span className="text-xs text-gray-400">
                             {loadingId === item.id
                               ? "Loading..."
@@ -100,6 +125,7 @@ export default function SupportRequestManager({
         <SupportRequestModal
           request={selectedRequest}
           onClose={() => setSelectedRequest(null)}
+          onStatusChange={handleStatusChange}
         />
       )}
     </div>
