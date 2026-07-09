@@ -128,7 +128,7 @@ export default function TeamManager({ initialTeamMembers }: TeamManagerProps) {
         <button
           type="button"
           onClick={showForm ? closeForm : openAddForm}
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
+          className="rounded-full bg-gray-900 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-white hover:bg-mint-600"
         >
           {showForm ? "Close" : "Add Team Member"}
         </button>
@@ -151,11 +151,11 @@ export default function TeamManager({ initialTeamMembers }: TeamManagerProps) {
       )}
 
       {members.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-400">
+        <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-400">
           No team members yet.
         </div>
       ) : (
-        <ul className="mt-6 divide-y divide-gray-200 overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <ul className="mt-6 divide-y divide-gray-200 overflow-hidden rounded-2xl border border-gray-200 bg-white">
           {members.map((member) => (
             <li key={member.id}>
               <button
@@ -238,7 +238,7 @@ export default function TeamManager({ initialTeamMembers }: TeamManagerProps) {
                 <button
                   type="button"
                   onClick={() => setShowChangePassword((prev) => !prev)}
-                  className="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                  className="rounded-full border border-gray-300 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
                 >
                   {passwordChangedId === panelMember.id
                     ? "Changed!"
@@ -262,7 +262,7 @@ export default function TeamManager({ initialTeamMembers }: TeamManagerProps) {
                   openEditForm(panelMember);
                   closeDetails();
                 }}
-                className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                className="rounded-full border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
               >
                 Edit
               </button>

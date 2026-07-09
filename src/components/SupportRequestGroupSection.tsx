@@ -35,11 +35,11 @@ export default function SupportRequestGroupSection({
       <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
 
       {groups.length === 0 ? (
-        <div className="mt-4 rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center text-sm text-gray-400">
+        <div className="mt-4 rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center text-sm text-gray-400">
           {emptyMessage}
         </div>
       ) : (
-        <ul className="mt-4 divide-y divide-gray-200 overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <ul className="mt-4 divide-y divide-gray-200 overflow-hidden rounded-2xl border border-gray-200 bg-white">
           {groups.map((group) => {
             const isExpanded = expandedClientId === group.clientId;
             return (
@@ -91,7 +91,7 @@ export default function SupportRequestGroupSection({
                                 : new Date(item.createdAt).toLocaleDateString()}
                             </span>
                             <span
-                              className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium ${SUPPORT_REQUEST_STATUS_SOLID_COLORS[item.status]}`}
+                              className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${SUPPORT_REQUEST_STATUS_SOLID_COLORS[item.status]}`}
                             >
                               {SUPPORT_REQUEST_STATUS_LABELS[item.status]}
                             </span>

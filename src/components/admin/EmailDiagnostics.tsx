@@ -66,14 +66,14 @@ export default function EmailDiagnostics() {
         delivery actually works.
       </p>
 
-      <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6">
+      <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-6">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-gray-900">Configuration</h3>
           <button
             type="button"
             onClick={handleCheckConfig}
             disabled={checking}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            className="rounded-full border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
           >
             {checking ? "Checking..." : "Check Configuration"}
           </button>
@@ -103,14 +103,14 @@ export default function EmailDiagnostics() {
         )}
       </div>
 
-      <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6">
+      <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-6">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-gray-900">Send Test Email</h3>
           <button
             type="button"
             onClick={handleSendTest}
             disabled={sending}
-            className="rounded-md bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-700 disabled:opacity-50"
+            className="rounded-full bg-gray-900 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white hover:bg-mint-600 disabled:opacity-50"
           >
             {sending ? "Sending..." : "Send Test Email"}
           </button>

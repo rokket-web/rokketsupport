@@ -22,13 +22,16 @@ export default async function ClientDashboardPage() {
   const requests = await listSupportRequestsForClient(session.clientId);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 sm:px-10">
+    <div className="min-h-screen bg-sage-50">
+      <header className="flex items-center justify-between border-b border-sage-200 bg-white px-6 py-4 sm:px-10">
         <span className="text-lg font-semibold text-gray-900">
-          Rokket Web Development
+          <span style={{ color: "#ae1d22" }}>ROKKET</span> Web Development
         </span>
         <div className="flex items-center gap-4">
-          <Link href="/" className="text-sm text-gray-500 hover:text-gray-800">
+          <Link
+            href="/"
+            className="text-xs font-semibold uppercase tracking-wide text-gray-500 hover:text-gray-800"
+          >
             Home
           </Link>
           <ClientLogoutButton />

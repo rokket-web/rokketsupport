@@ -11,7 +11,7 @@ export default function DashboardLink({ role }: DashboardLinkProps) {
   return (
     <Link
       href={href}
-      className="rounded-md border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+      className="rounded-full border border-gray-300 px-5 py-2 text-sm font-semibold uppercase tracking-wide text-gray-700 transition hover:border-gray-900"
     >
       My Dashboard
     </Link>

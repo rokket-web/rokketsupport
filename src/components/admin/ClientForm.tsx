@@ -33,7 +33,7 @@ const EMPTY_VALUES: ClientFormValues = {
 };
 
 const inputClasses =
-  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-black focus:outline-none";
+  "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-mint-600 focus:outline-none";
 const labelClasses = "mb-1 block text-sm font-medium text-gray-700";
 
 interface ClientFormProps {
@@ -74,7 +74,7 @@ export default function ClientForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="mb-6 grid grid-cols-1 gap-4 rounded-xl border border-gray-200 bg-white p-6 sm:grid-cols-2"
+      className="mb-6 grid grid-cols-1 gap-4 rounded-2xl border border-gray-200 bg-white p-6 sm:grid-cols-2"
     >
       <div>
         <label className={labelClasses}>Client Name</label>
@@ -218,14 +218,14 @@ export default function ClientForm({
       <div className="flex items-end gap-3 sm:col-span-2">
         <button
           type="submit"
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
+          className="rounded-full bg-gray-900 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-white hover:bg-mint-600"
         >
           {submitLabel}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          className="rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
         >
           Cancel
         </button>

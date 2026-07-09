@@ -27,7 +27,7 @@ export default function LoginMenu() {
         onClick={() => setOpen((prev) => !prev)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="rounded-md bg-gray-900 px-5 py-2 text-sm font-medium text-white transition hover:bg-gray-700"
+        className="rounded-full bg-gray-900 px-5 py-2 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-mint-600"
       >
         Login
       </button>
@@ -35,7 +35,7 @@ export default function LoginMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-10 mt-2 w-48 overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg"
+          className="absolute right-0 z-10 mt-2 w-48 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg"
         >
           <Link
             href="/login/client"

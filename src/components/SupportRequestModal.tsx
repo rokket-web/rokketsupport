@@ -67,7 +67,7 @@ export default function SupportRequestModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white p-6 shadow-xl">
+      <div className="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
         <div className="flex items-start justify-between">
           <h3 className="text-lg font-semibold text-gray-900">{request.issue}</h3>
           <button
@@ -110,7 +110,7 @@ export default function SupportRequestModal({
                 value={assigneeId}
                 disabled={reassigning}
                 onChange={(e) => handleAssigneeChange(e.target.value)}
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-black focus:outline-none disabled:opacity-50"
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-mint-600 focus:outline-none disabled:opacity-50"
               >
                 <option value={UNASSIGNED}>Unassigned</option>
                 {teamMembers.map((member) => (
@@ -166,7 +166,7 @@ export default function SupportRequestModal({
                     key={index}
                     src={image.dataUrl}
                     alt={`Screenshot ${index + 1}`}
-                    className="w-full rounded-md border border-gray-200 object-cover"
+                    className="w-full rounded-lg border border-gray-200 object-cover"
                   />
                 ))}
               </div>

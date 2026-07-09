@@ -209,7 +209,7 @@ export default function ClientManager({ initialClients, teamMembers }: ClientMan
         <button
           type="button"
           onClick={showForm ? closeForm : openAddForm}
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
+          className="rounded-full bg-gray-900 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-white hover:bg-mint-600"
         >
           {showForm ? "Close" : "Add Client"}
         </button>
@@ -232,11 +232,11 @@ export default function ClientManager({ initialClients, teamMembers }: ClientMan
       )}
 
       {clients.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-400">
+        <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-400">
           No clients yet. Client accounts will appear here.
         </div>
       ) : (
-        <ul className="mt-6 divide-y divide-gray-200 overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <ul className="mt-6 divide-y divide-gray-200 overflow-hidden rounded-2xl border border-gray-200 bg-white">
           {clients.map((client) => (
             <li key={client.id}>
               <button
@@ -343,7 +343,7 @@ export default function ClientManager({ initialClients, teamMembers }: ClientMan
                   type="button"
                   onClick={() => handleCopyPassword(panelClient)}
                   disabled={copyingPasswordId === panelClient.id}
-                  className="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                  className="rounded-full border border-gray-300 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
                 >
                   {copyingPasswordId === panelClient.id
                     ? "Copying..."
@@ -376,7 +376,7 @@ export default function ClientManager({ initialClients, teamMembers }: ClientMan
                     type="button"
                     onClick={() => handleCopySftpPassword(panelClient)}
                     disabled={copyingSftpPasswordId === panelClient.id}
-                    className="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                    className="rounded-full border border-gray-300 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
                   >
                     {copyingSftpPasswordId === panelClient.id
                       ? "Copying..."
@@ -410,7 +410,7 @@ export default function ClientManager({ initialClients, teamMembers }: ClientMan
                 <button
                   type="button"
                   onClick={() => setShowChangePortalPassword((prev) => !prev)}
-                  className="rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                  className="rounded-full border border-gray-300 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
                 >
                   {portalPasswordChangedId === panelClient.id
                     ? "Changed!"
@@ -445,7 +445,7 @@ export default function ClientManager({ initialClients, teamMembers }: ClientMan
                   openEditForm(panelClient);
                   closeDetails();
                 }}
-                className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                className="rounded-full border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
               >
                 Edit
               </button>
@@ -453,7 +453,7 @@ export default function ClientManager({ initialClients, teamMembers }: ClientMan
                 type="button"
                 onClick={() => handleLogin(panelClient)}
                 disabled={loggingInId === panelClient.id}
-                className="rounded-md bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-700 disabled:opacity-50"
+                className="rounded-full bg-gray-900 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white hover:bg-mint-600 disabled:opacity-50"
               >
                 {loggingInId === panelClient.id
                   ? "Logging in..."

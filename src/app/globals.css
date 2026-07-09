@@ -10,6 +10,13 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Warm sage palette — inspired by zoox.com — with the ROKKET logo red as the accent */
+  --color-sage-50: #eef3ee;
+  --color-sage-100: #dbe8dd;
+  --color-sage-200: #c3d9c7;
+  --color-mint-500: #ae1d22;
+  --color-mint-600: #8f171b;
 }
 
 body {

@@ -89,18 +89,18 @@ export default function SupportRequestSection({
         <button
           type="button"
           onClick={openPanel}
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
+          className="rounded-full bg-gray-900 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-white hover:bg-mint-600"
         >
           Submit Support Request
         </button>
       </div>
 
       {activeRequests.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-400">
+        <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-400">
           No active support requests.
         </div>
       ) : (
-        <ul className="mt-6 divide-y divide-gray-200 overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <ul className="mt-6 divide-y divide-gray-200 overflow-hidden rounded-2xl border border-gray-200 bg-white">
           {activeRequests.map((request) => (
             <li key={request.id} className="px-4 py-3">
               <div className="flex items-center gap-2">
@@ -120,11 +120,11 @@ export default function SupportRequestSection({
       </h2>
 
       {completedRequests.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-400">
+        <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-400">
           No completed support requests yet.
         </div>
       ) : (
-        <ul className="mt-6 divide-y divide-gray-200 overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <ul className="mt-6 divide-y divide-gray-200 overflow-hidden rounded-2xl border border-gray-200 bg-white">
           {completedRequests.map((request) => (
             <li key={request.id} className="px-4 py-3">
               <div className="flex items-center gap-2">
@@ -176,7 +176,7 @@ export default function SupportRequestSection({
             <input
               value={clientName}
               disabled
-              className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-600"
+              className="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-600"
             />
           </div>
 
@@ -187,7 +187,7 @@ export default function SupportRequestSection({
             <input
               value={websiteUrl}
               disabled
-              className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-600"
+              className="w-full rounded-lg border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-600"
             />
           </div>
 
@@ -197,7 +197,7 @@ export default function SupportRequestSection({
               placeholder="Website Issue"
               value={issue}
               onChange={(e) => setIssue(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-black focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-mint-600 focus:outline-none"
             />
           </div>
 
@@ -208,7 +208,7 @@ export default function SupportRequestSection({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-black focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-mint-600 focus:outline-none"
             />
           </div>
 
@@ -222,7 +222,7 @@ export default function SupportRequestSection({
               accept="image/*"
               multiple
               onChange={handleFileChange}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 file:mr-3 file:rounded-md file:border-0 file:bg-gray-900 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 file:mr-3 file:rounded-full file:border-0 file:bg-gray-900 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white"
             />
             {images.length > 0 && (
               <p className="mt-1 text-xs text-gray-500">
@@ -242,14 +242,14 @@ export default function SupportRequestSection({
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 disabled:opacity-50"
+              className="rounded-full bg-gray-900 px-4 py-2 text-sm font-semibold uppercase tracking-wide text-white hover:bg-mint-600 disabled:opacity-50"
             >
               {submitting ? "Submitting..." : "Submit Request"}
             </button>
             <button
               type="button"
               onClick={closePanel}
-              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
               Cancel
             </button>

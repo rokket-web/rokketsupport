@@ -13,8 +13,8 @@ export default function TeamMemberLoginPage() {
   );
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+    <div className="flex min-h-screen items-center justify-center bg-sage-50 px-4">
+      <div className="w-full max-w-sm rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
         <h1 className="mb-1 text-xl font-semibold text-gray-900">
           Team Member Login
         </h1>
@@ -36,7 +36,7 @@ export default function TeamMemberLoginPage() {
               type="text"
               autoComplete="username"
               required
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-black focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-mint-600 focus:outline-none"
             />
           </div>
 
@@ -53,7 +53,7 @@ export default function TeamMemberLoginPage() {
               type="password"
               autoComplete="current-password"
               required
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-black focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-mint-600 focus:outline-none"
             />
           </div>
 
@@ -66,7 +66,7 @@ export default function TeamMemberLoginPage() {
           <button
             type="submit"
             disabled={pending}
-            className="mt-2 w-full rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-700 disabled:opacity-50"
+            className="mt-2 w-full rounded-full bg-gray-900 px-4 py-2.5 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-mint-600 disabled:opacity-50"
           >
             {pending ? "Signing in..." : "Sign in"}
           </button>

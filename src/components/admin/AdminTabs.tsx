@@ -39,7 +39,7 @@ export default function AdminTabs({
 
   return (
     <div>
-      <div className="border-b border-gray-200">
+      <div className="border-b border-sage-200">
         <nav className="-mb-px flex gap-6" role="tablist">
           {TABS.map((tab) => (
             <button
@@ -48,10 +48,10 @@ export default function AdminTabs({
               role="tab"
               aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 border-b-2 px-1 py-3 text-sm font-medium transition ${
+              className={`flex items-center gap-2 border-b-2 px-1 py-3 text-xs font-semibold uppercase tracking-wide transition ${
                 activeTab === tab.id
-                  ? "border-gray-900 text-gray-900"
-                  : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                  ? "border-mint-600 text-gray-900"
+                  : "border-transparent text-gray-500 hover:border-sage-200 hover:text-gray-700"
               }`}
             >
               {tab.label}

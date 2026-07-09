@@ -19,6 +19,7 @@ import type {
 
 const MAX_IMAGES = 4;
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // 4MB per image
+const LOGIN_URL = "https://support.rokket.us";
 
 export type SubmitSupportRequestResult =
   | { success: true; request: SupportRequestSummary }
@@ -47,7 +48,7 @@ async function sendAssignmentEmail(params: {
     await sendEmail({
       to: params.to,
       subject: `Support request assigned to you: ${params.issue}`,
-      text: `Hi ${params.teamMemberName},\n\nYou've been assigned a support request:\n\nClient: ${params.clientName}\nWebsite: ${params.websiteUrl}\nIssue: ${params.issue}\n\n${params.description}\n\nLog into My Projects to view details and update its status.`,
+      text: `Hi ${params.teamMemberName},\n\nYou've been assigned a support request:\n\nClient: ${params.clientName}\nWebsite: ${params.websiteUrl}\nIssue: ${params.issue}\n\n${params.description}\n\nLog in to view details and update its status: ${LOGIN_URL}`,
       html: `
         <p>Hi ${escapeHtml(params.teamMemberName)},</p>
         <p>You've been assigned a support request:</p>
@@ -55,7 +56,14 @@ async function sendAssignmentEmail(params: {
         <p><strong>Website:</strong> ${escapeHtml(params.websiteUrl)}</p>
         <p><strong>Issue:</strong> ${escapeHtml(params.issue)}</p>
         <p>${escapeHtml(params.description).replace(/\n/g, "<br/>")}</p>
-        <p>Log into My Projects to view details and update its status.</p>
+        <p style="margin-top: 24px;">
+          <a
+            href="${LOGIN_URL}"
+            style="display: inline-block; padding: 10px 24px; background-color: #111827; color: #ffffff; text-decoration: none; border-radius: 6px; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-weight: bold;"
+          >
+            Log In
+          </a>
+        </p>
       `,
     });
   } catch (error) {
