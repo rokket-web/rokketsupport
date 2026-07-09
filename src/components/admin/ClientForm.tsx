@@ -6,6 +6,7 @@ import type { TeamMemberRecord } from "@/lib/userStore";
 
 export interface ClientFormValues {
   name: string;
+  email: string;
   websiteUrl: string;
   loginUrl: string;
   platform: ClientPlatform;
@@ -20,6 +21,7 @@ export interface ClientFormValues {
 
 const EMPTY_VALUES: ClientFormValues = {
   name: "",
+  email: "",
   websiteUrl: "",
   loginUrl: "",
   platform: "WordPress",
@@ -84,6 +86,21 @@ export default function ClientForm({
           onChange={(e) => update("name", e.target.value)}
           className={inputClasses}
         />
+      </div>
+
+      <div>
+        <label className={labelClasses}>Email</label>
+        <input
+          required
+          type="email"
+          placeholder="client@example.com"
+          value={values.email}
+          onChange={(e) => update("email", e.target.value)}
+          className={inputClasses}
+        />
+        <p className="mt-1 text-xs text-gray-500">
+          Used to notify the client when a support request&apos;s status changes.
+        </p>
       </div>
 
       <div>

@@ -11,10 +11,11 @@ import {
   updateSupportRequestStatus,
 } from "@/lib/supportRequestStore";
 import { sendEmail } from "@/lib/mail";
-import type {
-  SupportRequestDetails,
-  SupportRequestStatus,
-  SupportRequestSummary,
+import {
+  SUPPORT_REQUEST_STATUS_LABELS,
+  type SupportRequestDetails,
+  type SupportRequestStatus,
+  type SupportRequestSummary,
 } from "@/lib/supportRequests";
 
 const MAX_IMAGES = 4;
@@ -69,6 +70,43 @@ async function sendAssignmentEmail(params: {
   } catch (error) {
     console.error(
       "[sendAssignmentEmail] Failed to send assignment email:",
+      error
+    );
+  }
+}
+
+// Notifies a client that the status of their support request has changed.
+// Failures are logged, never thrown — a broken notification email must
+// never block the underlying status-update action from succeeding.
+async function sendStatusChangeEmail(params: {
+  to: string;
+  clientName: string;
+  issue: string;
+  status: SupportRequestStatus;
+}): Promise<void> {
+  const statusLabel = SUPPORT_REQUEST_STATUS_LABELS[params.status];
+  try {
+    await sendEmail({
+      to: params.to,
+      subject: `Support request update: ${params.issue}`,
+      text: `Hi ${params.clientName},\n\nThe status of your support request "${params.issue}" has been updated to: ${statusLabel}.\n\nLog in to view details: ${LOGIN_URL}`,
+      html: `
+        <p>Hi ${escapeHtml(params.clientName)},</p>
+        <p>The status of your support request <strong>${escapeHtml(params.issue)}</strong> has been updated to:</p>
+        <p style="font-size: 16px; font-weight: bold;">${escapeHtml(statusLabel)}</p>
+        <p style="margin-top: 24px;">
+          <a
+            href="${LOGIN_URL}"
+            style="display: inline-block; padding: 10px 24px; background-color: #111827; color: #ffffff; text-decoration: none; border-radius: 6px; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-weight: bold;"
+          >
+            Log In
+          </a>
+        </p>
+      `,
+    });
+  } catch (error) {
+    console.error(
+      "[sendStatusChangeEmail] Failed to send status update email:",
       error
     );
   }
@@ -199,6 +237,23 @@ export async function updateSupportRequestStatusAction(
   status: SupportRequestStatus
 ): Promise<SupportRequestSummary | null> {
   const updated = await updateSupportRequestStatus(id, status);
+
+  if (updated) {
+    const client = await getClientById(updated.clientId);
+    if (client?.email) {
+      await sendStatusChangeEmail({
+        to: client.email,
+        clientName: client.name,
+        issue: updated.issue,
+        status,
+      });
+    } else {
+      console.warn(
+        `[updateSupportRequestStatusAction] Client ${updated.clientId} has no email on file — skipping status update notification.`
+      );
+    }
+  }
+
   revalidatePath("/admin");
   revalidatePath("/client-dashboard");
   revalidatePath("/my-projects");

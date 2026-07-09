@@ -22,6 +22,7 @@ interface ClientManagerProps {
 function clientToFormValues(client: ClientRecord): ClientFormValues {
   return {
     name: client.name,
+    email: client.email ?? "",
     websiteUrl: client.websiteUrl,
     loginUrl: client.loginUrl,
     platform: client.platform,
@@ -86,6 +87,7 @@ export default function ClientManager({ initialClients, teamMembers }: ClientMan
       const assignee = teamMembers.find((m) => m.id === values.defaultAssigneeId);
       const newClient = await addClientAction({
         name: values.name,
+        email: values.email,
         websiteUrl: values.websiteUrl,
         loginUrl: values.loginUrl,
         platform: values.platform,
@@ -113,6 +115,7 @@ export default function ClientManager({ initialClients, teamMembers }: ClientMan
       const updated = await updateClientAction({
         id: editingClient.id,
         name: values.name,
+        email: values.email,
         websiteUrl: values.websiteUrl,
         loginUrl: values.loginUrl,
         platform: values.platform,
@@ -281,6 +284,15 @@ export default function ClientManager({ initialClients, teamMembers }: ClientMan
               >
                 ×
               </button>
+            </div>
+
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                Email
+              </p>
+              <p className="mt-1 text-sm text-gray-900">
+                {panelClient.email || "—"}
+              </p>
             </div>
 
             <div>

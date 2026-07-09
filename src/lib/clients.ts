@@ -8,6 +8,8 @@ export type ClientPlatform = (typeof CLIENT_PLATFORMS)[number];
 export interface ClientRecord {
   id: string;
   name: string;
+  // Used to notify the client when a support request's status changes.
+  email?: string;
   websiteUrl: string;
   loginUrl: string;
   platform: ClientPlatform;

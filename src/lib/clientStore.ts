@@ -15,6 +15,7 @@ const ENCRYPTION_KEY = crypto
 interface ClientDoc {
   _id: string;
   name: string;
+  email?: string;
   websiteUrl: string;
   loginUrl: string;
   platform: ClientPlatform;
@@ -32,6 +33,7 @@ interface ClientDoc {
 
 export interface AddClientInput {
   name: string;
+  email?: string;
   websiteUrl: string;
   loginUrl: string;
   platform: ClientPlatform;
@@ -48,6 +50,7 @@ export interface AddClientInput {
 export interface UpdateClientInput {
   id: string;
   name: string;
+  email?: string;
   websiteUrl: string;
   loginUrl: string;
   platform: ClientPlatform;
@@ -96,6 +99,7 @@ function toPublicRecord(doc: ClientDoc): ClientRecord {
   return {
     id: doc._id,
     name: doc.name,
+    email: doc.email,
     websiteUrl: doc.websiteUrl,
     loginUrl: doc.loginUrl,
     platform: doc.platform,
@@ -121,6 +125,7 @@ export async function addClient(input: AddClientInput): Promise<ClientRecord> {
   const doc: ClientDoc = {
     _id: crypto.randomUUID(),
     name: input.name,
+    email: input.email || undefined,
     websiteUrl: input.websiteUrl,
     loginUrl: input.loginUrl,
     platform: input.platform,
@@ -148,6 +153,7 @@ export async function updateClient(
   const updated: ClientDoc = {
     ...existing,
     name: input.name,
+    email: input.email || undefined,
     websiteUrl: input.websiteUrl,
     loginUrl: input.loginUrl,
     platform: input.platform,
